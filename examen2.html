@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen 3 - CENEVAL</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background-color: var(--warning);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background-color: #e67e22;
+        }
+        
+        .exam-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .exam-header h2 {
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--secondary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f9f9f9;
+            border-color: #ccc;
+        }
+        
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: var(--secondary);
+        }
+        
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .exam-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: none;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+        }
+        
+        .score-details {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .correct {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .incorrect {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .review-questions {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .review-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .review-item.correct {
+            border-left: 4px solid var(--success);
+        }
+        
+        .review-item.incorrect {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .timer {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .exam-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .exam-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .exam-controls .btn {
+                width: 100%;
+            }
+            
+            .option {
+                padding: 12px;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <a href="index.html" class="back-btn">← Volver al Menú Principal</a>
+            <div class="timer" id="timer">Tiempo: 00:00</div>
+        </div>
+
+        <div class="exam-container" id="exam-container">
+            <div class="exam-header">
+                <h2 id="exam-title">Examen 2 - Segunda Práctica</h2>
+                <div id="question-counter">Pregunta 1 de 100</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text" id="question-text">Cargando pregunta...</div>
+                <div class="options" id="options-container">
+                    <!-- Las opciones se cargarán dinámicamente -->
+                </div>
+            </div>
+            
+            <div class="exam-controls">
+                <button class="btn btn-warning" id="prev-btn" disabled>Anterior</button>
+                <button class="btn" id="next-btn">Siguiente</button>
+                <button class="btn btn-success" id="finish-btn" style="display: none;">Finalizar Examen</button>
+            </div>
+        </div>
+        
+        <div class="results-container" id="results-container">
+            <h2>Resultados del Examen 2</h2>
+            <div class="score" id="score">0/100</div>
+            <div class="score-details">
+                <p><span class="correct" id="correct-answers">0</span> respuestas correctas</p>
+                <p><span class="incorrect" id="incorrect-answers">0</span> respuestas incorrectas</p>
+                <p><span id="percentage">0%</span> de efectividad</p>
+                <p>Tiempo total: <span id="total-time">00:00</span></p>
+            </div>
+            <button class="btn" id="restart-btn">Volver a Intentar</button>
+            <button class="btn btn-warning" id="review-btn">Revisar Respuestas</button>
+            
+            <div class="review-questions" id="review-questions" style="display: none;">
+                <!-- Las preguntas revisadas se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos del examen 2 con las 100 preguntas COMPLETAS
+        const examData = {
+            title: "Examen 2 - Segunda Práctica",
+            questions: [
+                {
+                    id: 1,
+                    text: "Las actividades y las acciones realizadas sobre los datos están representadas por círculos o rectángulos de bordes redondos que se llaman _____.",
+                    options: [
+                        "a. Entidades",
+                        "b. Proceso", 
+                        "c. Almacenamiento de datos",
+                        "d. Flujo de datos"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 2,
+                    text: "Los lenguajes OOD proporcionan un mecanismo donde los métodos que realizan tareas similares pero varían en los argumentos, y que se pueden asignar al mismo nombre se llama _____.",
+                    options: [
+                        "a. Las clases",
+                        "b. Objeto",
+                        "c. Polimorfismo",
+                        "d. Encapsulacion"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 3,
+                    text: "¿Qué sistema basado en computadora puede tener un efecto profundo en el diseño que se elija y también se aplicará el enfoque de implementación?",
+                    options: [
+                        "a. Elementos basados en escenarios",
+                        "b. Elementos basados en la clase",
+                        "c. Elementos de comportamiento",
+                        "d. Elementos orientados al flujo."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 4,
+                    text: "El nombre del diagrama que representa el flujo de actividades descrito por los casos de uso y, al mismo tiempo, los captores están involucrados en UML.",
+                    options: [
+                        "a. Diagrama de estado",
+                        "b. Diagrama de carril de natación",
+                        "c. Diagrama de actividad", 
+                        "d. Diagrama de componentes"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 5,
+                    text: "De lo siguiente, seleccione la opción correcta que se usa para mostrar la opción disponible para la selección.",
+                    options: [
+                        "a. Caja",
+                        "b. Caja de texto",
+                        "c. Botón",
+                        "d. Boton de radio"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 6,
+                    text: "¿Cuál de los niveles lleva a cabo el objetivo, el objetivo, las tareas de trabajo, los productos de trabajo y otras actividades del proceso de software?",
+                    options: [
+                        "a. Realizado",
+                        "b. Incompleto",
+                        "c. Optimizado",
+                        "d. Gestionado cuantitativamente"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 7,
+                    text: "En OOD, los atributos (variables de datos) y los métodos (operación en los datos) que se agrupan se llaman ______.",
+                    options: [
+                        "a. Las clases",
+                        "b. Objetos",
+                        "c. Encapsulacion",
+                        "d. Herencia"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 8,
+                    text: "¿Qué es lo que a los diseñadores les gustaría tener una lista de todos los requisitos funcionales y no funcionales de la GUI que pueden tomarse del usuario y su solución de software existente?",
+                    options: [
+                        "a. Análisis de usuario",
+                        "b. Análisis de tareas",
+                        "c. Recopilación de requisitos de GUI",
+                        "d. Diseño e implementación de GUI"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 9,
+                    text: "¿Qué clases implementan las abstracciones de negocios de nivel inferior que se requieren para administrar completamente las clases de dominio de negocios?",
+                    options: [
+                        "a. Clases de interfaz de usuario",
+                        "b. Clases de dominio de negocios",
+                        "c. Clases de proceso",
+                        "d. Clases de sistema"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 10,
+                    text: "¿Qué tipo de DFD se concentra en el proceso del sistema y el flujo de datos en el sistema?",
+                    options: [
+                        "a. DFD lógico",
+                        "b. DFD físico",
+                        "c. Tanto A y B",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 11,
+                    text: "Cada atributo se define por su correspondiente conjunto de valores que se llama _____.",
+                    options: [
+                        "a. Entidad",
+                        "b. Dominio",
+                        "c. Relación",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 12,
+                    text: "El Lenguaje de modelado unificado (UML) se ha convertido en un estándar efectivo para el modelado de software. ¿Cuántas notaciones diferentes tiene?",
+                    options: [
+                        "a. Tres",
+                        "b. Cuatro",
+                        "c. Seis",
+                        "d. Nueve"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 13,
+                    text: "¿Qué modelo en el modelado del sistema representa el comportamiento dinámico del sistema?",
+                    options: [
+                        "a. Modelo de contexto",
+                        "b. Modelo de comportamiento",
+                        "c. Modelo de datos",
+                        "d. Modelo de objeto"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 14,
+                    text: "¿Qué modelo en el modelado de sistemas representa la naturaleza estática del sistema?",
+                    options: [
+                        "a. Modelo de comportamiento",
+                        "b. Modelo de contexto",
+                        "c. Modelo de datos",
+                        "d. Modelo estructural"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 15,
+                    text: "¿Qué perspectiva en el modelado de sistemas muestra el sistema o la arquitectura de datos?",
+                    options: [
+                        "a. Perspectiva estructural",
+                        "b. Perspectiva de comportamiento",
+                        "c. Perspectiva externa",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 16,
+                    text: "El UML admite el modelado basado en eventos utilizando diagramas _____.",
+                    options: [
+                        "a. Despliegue",
+                        "b. Colaboración",
+                        "c. Estado",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 17,
+                    text: "¿Cuál de los siguientes diagramas no es compatible con UML considerando el modelado basado en datos?",
+                    options: [
+                        "a. Actividad",
+                        "b. Diagrama de flujo de datos (DFD)",
+                        "c. Carta del estado",
+                        "d. Componente"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 18,
+                    text: "______ nos permite inferir que diferentes miembros de clases tienen algunas características comunes.",
+                    options: [
+                        "a. Realización",
+                        "b. Agregación",
+                        "c. Generalización",
+                        "d. dependencia"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 19,
+                    text: "______ y ______ diagramas de UML representan modelos de interacción.",
+                    options: [
+                        "a. Caso de uso, secuencia",
+                        "b. Clase, objeto",
+                        "c. Actividad, gráfico del estado",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 20,
+                    text: "¿Qué nivel de Diagrama de relaciones entre entidades (ERD) modela todas las entidades y relaciones?",
+                    options: [
+                        "a. Nivel 1",
+                        "b. Nivel 2",
+                        "c. Nivel 3",
+                        "d. Nivel 4"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 21,
+                    text: "La desventaja de la modularización es",
+                    options: [
+                        "a. Los componentes más pequeños son más fáciles de mantener",
+                        "b. Programa puede dividirse en función de aspectos funcionales.",
+                        "c. El nivel deseado de abstracción se puede traer en el programa",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 22,
+                    text: "La aplicación que genera un diálogo para obtener la confirmación del usuario y para eliminar un archivo es un ejemplo para ______.",
+                    options: [
+                        "a. Boton de radio",
+                        "b. Caja de texto",
+                        "c. Caja",
+                        "d. Cuadro de dialogo"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 23,
+                    text: "¿Cuál de las siguientes opciones no se puede aplicar con el software de acuerdo con las capas de ingeniería de software?",
+                    options: [
+                        "a. Proceso",
+                        "b. Métodos",
+                        "c. Fabricación",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 24,
+                    text: "¿Qué software se usa para controlar productos y sistemas para los mercados de consumo e industrial?",
+                    options: [
+                        "a. Software del sistema",
+                        "b. Software de inteligencia artificial",
+                        "c. Software embebido",
+                        "d. Ingeniería y software científico."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 25,
+                    text: "¿Qué componente de software permite que el programa manipule adecuadamente la información?",
+                    options: [
+                        "a. Instrucciones",
+                        "b. Estructuras de datos",
+                        "c. Documentos",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 26,
+                    text: "A partir de lo siguiente, ¿qué software se ha caracterizado por los algoritmos de 'Crujido de números'?",
+                    options: [
+                        "a. Software del sistema",
+                        "b. Software de inteligencia artificial",
+                        "c. Software embebido",
+                        "d. Ingeniería y software científico."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 27,
+                    text: "¿Qué es una ventana secundaria que contiene un mensaje para el usuario y solicita que se realice alguna acción?",
+                    options: [
+                        "a. Cuadro de dialogo",
+                        "b. Caja de texto",
+                        "c. Caja",
+                        "d. Boton de radio"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 28,
+                    text: "¿Qué nivel de subsistema se usa de una aplicación?",
+                    options: [
+                        "a. Nivel de aplicación",
+                        "b. Nivel de componente",
+                        "c. Nivel de modulos",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 29,
+                    text: "¿Qué diseño define la estructura lógica de cada módulo y sus interfaces que se utiliza para comunicarse con otros módulos?",
+                    options: [
+                        "a. Diseños de alto nivel",
+                        "b. Diseños arquitectónicos",
+                        "c. Diseño detallado",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 30,
+                    text: "¿Qué diseño se ocupa de la parte de implementación en la que muestra un sistema y sus subsistemas en los dos diseños anteriores?",
+                    options: [
+                        "a. Diseño arquitectónico",
+                        "b. Diseño de alto nivel",
+                        "c. Diseño detallado",
+                        "d. Tanto A y B"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 31,
+                    text: "El proceso y la mejora del software son evaluados por ____.",
+                    options: [
+                        "a. ISO 9000",
+                        "b. ISO 9001",
+                        "c. ESPECIA (ISO / IEC15504)",
+                        "d. Tanto byc"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 32,
+                    text: "¿Cuál de los siguientes no es una sección en el estándar para los planes SQA recomendados por IEEE?",
+                    options: [
+                        "a. Presupuesto",
+                        "b. Hora",
+                        "c. Gente",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 33,
+                    text: "¿Cuál es la exactitud, integridad y consistencia del modelo de requisitos tendrá una fuerte influencia en la calidad de todos los productos de trabajo que siguen?",
+                    options: [
+                        "a. Calidad de los requisitos",
+                        "b. Calidad de diseño",
+                        "c. Calidad del código",
+                        "d. Efectividad del control de calidad."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 34,
+                    text: "IEEE proporciona un estándar como IEEE 830-1993. ¿Para qué actividad se recomienda esta norma estándar?",
+                    options: [
+                        "a. Especificación de requisitos de software",
+                        "b. Diseño de software",
+                        "c. Pruebas",
+                        "d. Tanto a como B"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 35,
+                    text: "El Six Sigma para ingeniería de software ¿Qué proporciona el proceso existente y su salida para determinar el rendimiento de calidad actual?",
+                    options: [
+                        "a. Definir",
+                        "b. Analizar",
+                        "c. Medida",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 36,
+                    text: "¿Cuál de los siguientes no es un software de calidad?",
+                    options: [
+                        "a. Productividad",
+                        "b. Portabilidad",
+                        "c. Oportunidad",
+                        "d. Visibilidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 37,
+                    text: "Cuál de las siguientes no es una Actividad Paraguas que complemente las cinco actividades del marco de proceso y ayude al equipo a gestionar y controlar el progreso, la calidad, el cambio y el riesgo.",
+                    options: [
+                        "a. Gestión de reutilización.",
+                        "b. Medición",
+                        "c. Gestión de riesgos",
+                        "d. Opiniones de los usuarios"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 38,
+                    text: "Elija un software interno de calidad a continuación:",
+                    options: [
+                        "a. escalabilidad",
+                        "b. usabilidad",
+                        "c. reutilización",
+                        "d. confiabilidad"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 39,
+                    text: "El modelo CMM en Ingeniería de Software es una técnica de ______.",
+                    options: [
+                        "a. Desarrollar el software",
+                        "b. Mejorar el proceso del software.",
+                        "c. Mejorar el proceso de prueba.",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 40,
+                    text: "Si no tiene idea de cómo mejorar el proceso para el software de calidad, ¿qué modelo se utiliza?",
+                    options: [
+                        "a. Un modelo continuo",
+                        "b. Un modelo por etapas",
+                        "c. Tanto A y B",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 41,
+                    text: "¿Qué tipo de prueba de software se usa generalmente en Mantenimiento de Software?",
+                    options: [
+                        "a. Pruebas de regresión",
+                        "b. Pruebas del sistema",
+                        "c. Pruebas de integración",
+                        "d. Examen de la unidad"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 42,
+                    text: "La prueba de regresión es una actividad muy costosa.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 43,
+                    text: "Las técnicas de reevaluación selectiva pueden ser más económicas que la técnica de 'reprobar todo'. ¿Cuántas técnicas de reevaluación selectiva existen?",
+                    options: [
+                        "a. dos",
+                        "b. Tres",
+                        "c. cuatro",
+                        "d. cinco"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 44,
+                    text: "¿Qué técnica de reevaluación selectiva selecciona cada caso de prueba que hace que un programa modificado produzca una salida diferente a su versión original?",
+                    options: [
+                        "a. Cobertura",
+                        "b. Minimización",
+                        "c. Seguro",
+                        "d. Maximización"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 45,
+                    text: "______ mide la capacidad de una técnica de selección de prueba de regresión para manejar aplicaciones realistas.",
+                    options: [
+                        "a. Eficiencia",
+                        "b. Precisión",
+                        "c. Generalidad",
+                        "d. Inclusión"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 46,
+                    text: "¿Qué técnica de selección de prueba de regresión expone fallas causadas por modificaciones?",
+                    options: [
+                        "a. Eficiencia",
+                        "b. Precisión",
+                        "c. Generalidad",
+                        "d. Inclusión"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 47,
+                    text: "El proceso de generación de documentos de análisis y diseño se conoce como",
+                    options: [
+                        "a. Ingeniería de software",
+                        "b. Reingeniería de software",
+                        "c. Ingeniería inversa",
+                        "d. Reingeniería"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 48,
+                    text: "¿Qué es un parche de software?",
+                    options: [
+                        "a. Arreglo requerido o crítico",
+                        "b. Arreglo de emergencia",
+                        "c. Corrección diaria o rutinaria",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 49,
+                    text: "¿Cuál de los siguientes no es un modelo de mantenimiento?",
+                    options: [
+                        "a. Modelo de cascada",
+                        "b. Modelo orientado a la reutilización",
+                        "c. Modelo de mejora iterativa",
+                        "d. Modelo de solución rápida"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 50,
+                    text: "¿Qué significa ACT en el modelo in Boehm para el mantenimiento del software?",
+                    options: [
+                        "a. Pista de cambio real",
+                        "b. Pista de cambio anual",
+                        "c. Tráfico de cambio anual",
+                        "d. Tráfico de cambio real"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 51,
+                    text: "La certificación de terceros para estándares de software se basa en",
+                    options: [
+                        "a. UI 1998, Segunda Edición",
+                        "b. UT 1998, Segunda Edición",
+                        "c. UI 1992, Segunda Edición",
+                        "d. UI 1996, Segunda Edición"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 52,
+                    text: "¿Cuáles son los objetivos para obtener la acreditación de laboratorio?",
+                    options: [
+                        "a. Aumentar la disponibilidad de servicios de pruebas a través de laboratorios de terceros.",
+                        "b. Aumentar la disponibilidad del mercado de pruebas para fomentar el desarrollo de la industria de pruebas de software.",
+                        "c. Reducir los costos al aumentar la oferta de servicios de pruebas.",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 53,
+                    text: "El Programa Nacional de Acreditación de Laboratorios Voluntarios aprueba la acreditación en",
+                    options: [
+                        "a. Estándares ambientales",
+                        "b. Computadoras y electronica",
+                        "c. Pruebas de producto",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 54,
+                    text: "CSTE significa",
+                    options: [
+                        "a. Tecnología de software certificada",
+                        "b. Probador de software certificado",
+                        "c. Aprendiz de software certificado",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 55,
+                    text: "CSQA significa",
+                    options: [
+                        "a. Analista de Calidad de Software Certificado",
+                        "b. Calidad de software certificada aprobada",
+                        "c. Calidad de software certificada aclamada",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 56,
+                    text: "“Robustez” responde cuál de las siguientes descripciones?",
+                    options: [
+                        "a. Las herramientas CASE se utilizarán para apoyar las actividades del proceso.",
+                        "b. Los errores de proceso se evitan o atrapan antes de que den como resultado errores del producto",
+                        "c. El proceso definido es aceptable y utilizable por los ingenieros responsables de producir el software",
+                        "d. El proceso continúa a pesar de problemas inesperados."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 57,
+                    text: "La mejora de procesos es el conjunto de actividades, métodos y transformaciones que los desarrolladores utilizan para desarrollar y mantener sistemas de información.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 58,
+                    text: "¿La 'comprensibilidad' responde cuál de las siguientes descripciones?",
+                    options: [
+                        "a. La medida en que el proceso se define explícitamente",
+                        "b. Los errores de proceso se evitan o atrapan antes de que den como resultado errores del producto",
+                        "c. El proceso definido es aceptable y utilizable por los ingenieros responsables de producir el producto de software",
+                        "d. El proceso continúa a pesar de problemas inesperados."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 59,
+                    text: "¿Cuántas etapas hay en proceso de mejora?",
+                    options: [
+                        "a. Tres",
+                        "b. cuatro",
+                        "c. cinco",
+                        "d. seis"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 60,
+                    text: "¿ En qué etapa de mejora de procesos se identifican cuellos de botella y debilidades?",
+                    options: [
+                        "a. Medición del proceso",
+                        "b. Análisis de proceso",
+                        "c. Cambio de proceso",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 61,
+                    text: "COCOMO significa ______.",
+                    options: [
+                        "a. Consumo de café",
+                        "b. Consejo de Construcción",
+                        "c. Control de Control",
+                        "d. Composición"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 62,
+                    text: "¿Cuál puede estimarse en términos de KLOC (línea de código de Kilo) o al calcular el número de puntos de función en el software?",
+                    options: [
+                        "a. Estimación del tiempo",
+                        "b. Estimación del esfuerzo",
+                        "c. Estimación de costos",
+                        "d. Estimación del tamaño del software"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 63,
+                    text: "¿Qué métricas se derivan al normalizar las medidas de calidad y / o productividad considerando el tamaño del software que se ha producido?",
+                    options: [
+                        "a. Tamaño orientado",
+                        "b. Orientado a funciones",
+                        "c. Orientado a objetos",
+                        "d. Uso-caso-orientado"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 64,
+                    text: "¿Cuál es la medida más común para la corrección?",
+                    options: [
+                        "a. Defectos por KLOC",
+                        "b. Errores por KLOC",
+                        "c. $ por KLOC",
+                        "d. Páginas de documentación per KLOC."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 65,
+                    text: "Abrevia el término SMI.",
+                    options: [
+                        "a. Índice de madurez del software",
+                        "b. Instrucción del modelo de software",
+                        "c. Instrucción de madurez de software",
+                        "d. Índice de modelo de software"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 66,
+                    text: "En la técnica de estimación empírica, ¿qué modelo ha desarrollado Barry W. Boehm?",
+                    options: [
+                        "a. Modelo putnam",
+                        "b. COCOMO",
+                        "c. Ambos a y b",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 67,
+                    text: "¿La línea de código (LOC) del producto viene bajo qué tipo de medidas?",
+                    options: [
+                        "a. Medidas indirectas",
+                        "b. Medidas directas",
+                        "c. Codificación",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 68,
+                    text: "¿Cuál es el tamaño del software de estimación debe ser conocido?",
+                    options: [
+                        "a. Estimación del tiempo",
+                        "b. Estimación del esfuerzo",
+                        "c. Estimación de costos",
+                        "d. Estimación del tamaño del software"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 69,
+                    text: "¿Cuántos números de niveles de madurez en CMM están disponibles?",
+                    options: [
+                        "a. 3",
+                        "b. 4",
+                        "c. 5",
+                        "d. 6"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 70,
+                    text: "Cuál de los siguientes es la tarea de los indicadores del proyecto:",
+                    options: [
+                        "a. Ayuda en la evaluación del estado del proyecto en curso.",
+                        "b. rastrear el riesgo potencial",
+                        "c. tanto a como B",
+                        "d. ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 71,
+                    text: "La cantidad de tiempo que el software está disponible para su uso se conoce como",
+                    options: [
+                        "a. Confiabilidad",
+                        "b. Usabilidad",
+                        "c. Eficiencia",
+                        "d. Funcionalidad"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 72,
+                    text: "El tamaño y la complejidad son parte de",
+                    options: [
+                        "a. Métricas del producto",
+                        "b. Métricas del proceso",
+                        "c. Métricas del proyecto",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 73,
+                    text: "El costo y el horario son parte de",
+                    options: [
+                        "a. Métricas del producto",
+                        "b. Métricas del proceso",
+                        "c. Métricas del proyecto",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 74,
+                    text: "El número de errores encontrados por persona por hora gastada es un ejemplo de",
+                    options: [
+                        "a. medición",
+                        "b. medida",
+                        "c. métrico",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 75,
+                    text: "¿Cuál de los siguientes no está clasificado en la Operación del producto de los factores de calidad del software de McCall?",
+                    options: [
+                        "a. Flexibilidad",
+                        "b. Confiabilidad",
+                        "c. Usabilidad",
+                        "d. Integridad"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 76,
+                    text: "La relación de arco a nodo se da como r = a / n. ¿Qué representa 'a' en la relación?",
+                    options: [
+                        "a. Número máximo de nodos en cualquier nivel",
+                        "b. El camino más largo desde la raíz hasta una hoja.",
+                        "c. número de módulos",
+                        "d. líneas de control"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 77,
+                    text: "¿Cuál de las siguientes no está categorizada bajo Métricas de diseño a nivel de componente?",
+                    options: [
+                        "a. Métricas de Complejidad",
+                        "b. Métricas de Cohesión",
+                        "c. Métricas de morfología",
+                        "d. Métricas de acoplamiento"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 78,
+                    text: "El porcentaje de módulos inspeccionados es parte de",
+                    options: [
+                        "a. Métricas del producto",
+                        "b. Métricas del proceso",
+                        "c. Métricas del proyecto",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 79,
+                    text: "Identifique la opción correcta con referencia a Métricas de calidad del software.",
+                    options: [
+                        "a. Integridad = [Sigma (1 - amenaza)] * (1 - seguridad)",
+                        "b. Integridad = [1 - Sigma (amenaza)] * (1 - seguridad)",
+                        "c. Integridad = [1 - amenaza * Sigma (1 - seguridad)]",
+                        "d. Integridad = Sigma [1 - amenaza * (1 - seguridad)]"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 80,
+                    text: "De los siguientes métodos, ¿qué tamaño del producto de software se puede calcular?",
+                    options: [
+                        "a. Contando las líneas de código entregadas.",
+                        "b. Contando los puntos de función entregados",
+                        "c. Tanto a como b anterior",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 81,
+                    text: "El modelo de proceso está representado por",
+                    options: [
+                        "a. CMMI",
+                        "b. SEI",
+                        "c. CMI",
+                        "d. SE"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 82,
+                    text: "Área de proceso en la que están presentes la innovación organizativa y el análisis y la resolución informales de despliegue.",
+                    options: [
+                        "a. mejora continua del proceso",
+                        "b. gestión cuantitativa",
+                        "c. proceso de estandarización",
+                        "d. gestión básica de proyectos"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 83,
+                    text: "Nivel de capacidad en el que se han alcanzado todos los criterios del nivel 3 y el área de proceso se controla y mejora mediante la medición y la evaluación de la calidad en",
+                    options: [
+                        "a. Nivel 1: Realizado",
+                        "b. Nivel 2: Gestionado",
+                        "c. Nivel 3: Definido",
+                        "d. Nivel 4: Gestionado Cuantitativamente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 84,
+                    text: "El área de proceso que define y se enfoca en el proceso organizativo y la capacitación se enfoca en",
+                    options: [
+                        "a. mejora continua del proceso",
+                        "b. proceso de estandarización",
+                        "c. gestión básica de proyectos",
+                        "d. gestión cuantitativa"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 85,
+                    text: "El modelo CCMI que describe un proceso en dos dimensiones es",
+                    options: [
+                        "a. modelo continuo",
+                        "b. modelo discreto",
+                        "c. modelo en escena",
+                        "d. modelo estable"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 86,
+                    text: "El área de proceso que define y se centra en el proceso organizativo y la capacitación está presente en el nivel de",
+                    options: [
+                        "a. optimizando",
+                        "b. definido",
+                        "c. realizado",
+                        "d. manejado"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 87,
+                    text: "CMMI define la planificación del proyecto para la categoría",
+                    options: [
+                        "a. gestión de proyectos",
+                        "b. tecnologías de la información",
+                        "c. gestión de acuerdos con proveedores",
+                        "d. gestión de riesgos"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 88,
+                    text: "El modelo de proceso CMMI puede ser representado por",
+                    options: [
+                        "a. solo una manera",
+                        "b. dos caminos",
+                        "c. tres maneras",
+                        "d. cuatro formas"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 89,
+                    text: "CMMI significa",
+                    options: [
+                        "a. Capacidad de madurez Integración de fusión",
+                        "b. Integración del modelo de madurez consumida",
+                        "c. Capacidad de integración del modelo de madurez",
+                        "d. Incremento del modelo de madurez de la capacidad"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 90,
+                    text: "En el ciclo de planear-hacer-verificar-actuar, el establecimiento de objetivos de proceso, actividades y tareas necesarias para lograr un software de alta calidad se logra de",
+                    options: [
+                        "a. plan",
+                        "b. hacer",
+                        "c. comprobar",
+                        "d. acto"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 91,
+                    text: "Las métricas de cohesión y las métricas de acoplamiento son métricas en qué nivel de diseño?",
+                    options: [
+                        "a. Diseño de interfaz de usuario",
+                        "b. Diseño basado en patrones",
+                        "c. Diseño arquitectónico",
+                        "d. Diseño a nivel de componente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 92,
+                    text: "Cuando los elementos del módulo se agrupan y se ejecutan secuencialmente para realizar una tarea, se llama ______.",
+                    options: [
+                        "a. Cohesión procesal",
+                        "b. Cohesión logica",
+                        "c. Cohesión emporal",
+                        "d. Cohesión incidental"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 93,
+                    text: "¿Qué acoplamiento también se conoce como 'acoplamiento global'?",
+                    options: [
+                        "a. Acoplamiento de contenido",
+                        "b. Acoplamiento de sello",
+                        "c. Acoplamiento de datos",
+                        "d. Acoplamiento común"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 94,
+                    text: "¿Cuál es la secuencia detallada de pasos que describe la interacción entre el usuario y la aplicación?",
+                    options: [
+                        "a. Guiones de escenarios",
+                        "b. Clases de apoyo",
+                        "c. Clases claves",
+                        "d. Subsistemas"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 95,
+                    text: "¿Qué clases representan almacenes de datos (por ejemplo, una base de datos) que persistirán más allá de la ejecución del software?",
+                    options: [
+                        "a. Clases de proceso",
+                        "b. Clases de sistema",
+                        "c. Clases persistentes",
+                        "d. Clases de interfaz de usuario"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 96,
+                    text: "Abrevia el término CMMI.",
+                    options: [
+                        "a. Capacidad de integración del modelo de madurez",
+                        "b. Integración de madurez modelo de capacidad",
+                        "c. Instrucciones del modelo de madurez de la capacidad",
+                        "d. Modelo de capacidad Instrucciones de madurez"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 97,
+                    text: "La agrupación de todos los elementos relacionados funcionalmente se conoce como _____.",
+                    options: [
+                        "a. Cohesión",
+                        "b. Acoplamiento",
+                        "c. Tanto A y B",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 98,
+                    text: "La cohesión es una indicación cualitativa del grado en que un módulo",
+                    options: [
+                        "a. Se puede escribir de forma más compacta.",
+                        "b. se centra en una sola cosa.",
+                        "c. es capaz de completar su función de manera oportuna.",
+                        "d. Está conectado a otros módulos y al mundo exterior."
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 99,
+                    text: "El acoplamiento es una indicación cualitativa del grado en que un módulo",
+                    options: [
+                        "a. Se puede escribir de forma más compacta.",
+                        "b. se centra en una sola cosa.",
+                        "c. es capaz de completar su función de manera oportuna.",
+                        "d. Está conectado a otros módulos y al mundo exterior."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 100,
+                    text: "Los paquetes de Java y las subrutinas de FORTRAN son ejemplos de _____",
+                    options: [
+                        "a. Funciones",
+                        "b. Módulos",
+                        "c. Las clases",
+                        "d. Sub procedimientos"
+                    ],
+                    correctAnswer: 1
+                }
+            ]
+        };
+
+        // Variables globales
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(examData.questions.length).fill(null);
+        let startTime = Date.now();
+        let timerInterval;
+
+        // Elementos del DOM
+        const examContainer = document.getElementById('exam-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const incorrectAnswersElement = document.getElementById('incorrect-answers');
+        const percentageElement = document.getElementById('percentage');
+        const totalTimeElement = document.getElementById('total-time');
+        const restartBtn = document.getElementById('restart-btn');
+        const reviewBtn = document.getElementById('review-btn');
+        const reviewQuestions = document.getElementById('review-questions');
+
+        // Inicializar el examen
+        function initExam() {
+            startTimer();
+            loadQuestion(currentQuestionIndex);
+            updateNavigationButtons();
+        }
+
+        // Temporizador
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            timerElement.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Cargar pregunta
+        function loadQuestion(index) {
+            const question = examData.questions[index];
+            
+            questionText.textContent = `${question.id}. ${question.text}`;
+            questionCounter.textContent = `Pregunta ${question.id} de ${examData.questions.length}`;
+            
+            // Actualizar barra de progreso
+            const progress = ((index + 1) / examData.questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[index] === optionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.innerHTML = `
+                    <input type="radio" name="answer" id="option-${optionIndex}" value="${optionIndex}" 
+                        ${userAnswers[index] === optionIndex ? 'checked' : ''}>
+                    <label for="option-${optionIndex}">${option}</label>
+                `;
+                
+                optionElement.addEventListener('click', () => selectAnswer(optionIndex));
+                optionsContainer.appendChild(optionElement);
+            });
+        }
+
+        // Seleccionar respuesta
+        function selectAnswer(optionIndex) {
+            userAnswers[currentQuestionIndex] = optionIndex;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // Navegación
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === examData.questions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function goToNextQuestion() {
+            if (currentQuestionIndex < examData.questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        function goToPrevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        // Finalizar examen
+        function finishExam() {
+            stopTimer();
+            calculateResults();
+            showResults();
+        }
+
+        // Calcular resultados
+        function calculateResults() {
+            let correctCount = 0;
+            let incorrectCount = 0;
+            
+            examData.questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    correctCount++;
+                } else if (userAnswers[index] !== null) {
+                    incorrectCount++;
+                }
+            });
+            
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const percentage = Math.round((correctCount / examData.questions.length) * 100);
+            
+            scoreElement.textContent = `${correctCount}/${examData.questions.length}`;
+            correctAnswersElement.textContent = correctCount;
+            incorrectAnswersElement.textContent = incorrectCount;
+            percentageElement.textContent = `${percentage}%`;
+            totalTimeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            examContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+        }
+
+        // Revisar respuestas
+        function showReview() {
+            reviewQuestions.innerHTML = '';
+            reviewQuestions.style.display = 'block';
+            
+            examData.questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                reviewItem.innerHTML = `
+                    <div class="question-text"><strong>Pregunta ${question.id}:</strong> ${question.text}</div>
+                    <div><strong>Tu respuesta:</strong> ${userAnswer !== null ? question.options[userAnswer] : 'Sin responder'}</div>
+                    <div><strong>Respuesta correcta:</strong> ${question.options[question.correctAnswer]}</div>
+                    ${!isCorrect && userAnswer !== null ? 
+                        '<div class="feedback incorrect">✗ Respuesta incorrecta</div>' : 
+                        isCorrect ? 
+                        '<div class="feedback correct">✓ Respuesta correcta</div>' :
+                        '<div class="feedback incorrect">○ Sin responder</div>'
+                    }
+                `;
+                
+                reviewQuestions.appendChild(reviewItem);
+            });
+            
+            reviewBtn.textContent = 'Ocultar Revisión';
+            reviewBtn.onclick = hideReview;
+        }
+
+        function hideReview() {
+            reviewQuestions.style.display = 'none';
+            reviewBtn.textContent = 'Revisar Respuestas';
+            reviewBtn.onclick = showReview;
+        }
+
+        // Reiniciar examen
+        function restartExam() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(examData.questions.length).fill(null);
+            startTime = Date.now();
+            
+            examContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            reviewQuestions.style.display = 'none';
+            reviewBtn.textContent = 'Revisar Respuestas';
+            reviewBtn.onclick = showReview;
+            
+            initExam();
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        finishBtn.addEventListener('click', finishExam);
+        restartBtn.addEventListener('click', restartExam);
+        reviewBtn.addEventListener('click', showReview);
+
+        // Inicializar el examen cuando se carga la página
+        document.addEventListener('DOMContentLoaded', initExam);
+    </script>

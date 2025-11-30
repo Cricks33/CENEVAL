@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen 3 - CENEVAL</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background-color: var(--warning);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background-color: #e67e22;
+        }
+        
+        .exam-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .exam-header h2 {
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--secondary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f9f9f9;
+            border-color: #ccc;
+        }
+        
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: var(--secondary);
+        }
+        
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .exam-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: none;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+        }
+        
+        .score-details {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .correct {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .incorrect {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .review-questions {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .review-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .review-item.correct {
+            border-left: 4px solid var(--success);
+        }
+        
+        .review-item.incorrect {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .timer {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .exam-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .exam-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .exam-controls .btn {
+                width: 100%;
+            }
+            
+            .option {
+                padding: 12px;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <a href="index.html" class="back-btn">← Volver al Menú Principal</a>
+            <div class="timer" id="timer">Tiempo: 00:00</div>
+        </div>
+
+        <div class="exam-container" id="exam-container">
+            <div class="exam-header">
+                <h2 id="exam-title">Examen 1 - Primera Práctica</h2>
+                <div id="question-counter">Pregunta 1 de 100</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text" id="question-text">Cargando pregunta...</div>
+                <div class="options" id="options-container">
+                    <!-- Las opciones se cargarán dinámicamente -->
+                </div>
+            </div>
+            
+            <div class="exam-controls">
+                <button class="btn btn-warning" id="prev-btn" disabled>Anterior</button>
+                <button class="btn" id="next-btn">Siguiente</button>
+                <button class="btn btn-success" id="finish-btn" style="display: none;">Finalizar Examen</button>
+            </div>
+        </div>
+        
+        <div class="results-container" id="results-container">
+            <h2>Resultados del Examen 1</h2>
+            <div class="score" id="score">0/100</div>
+            <div class="score-details">
+                <p><span class="correct" id="correct-answers">0</span> respuestas correctas</p>
+                <p><span class="incorrect" id="incorrect-answers">0</span> respuestas incorrectas</p>
+                <p><span id="percentage">0%</span> de efectividad</p>
+                <p>Tiempo total: <span id="total-time">00:00</span></p>
+            </div>
+            <button class="btn" id="restart-btn">Volver a Intentar</button>
+            <button class="btn btn-warning" id="review-btn">Revisar Respuestas</button>
+            
+            <div class="review-questions" id="review-questions" style="display: none;">
+                <!-- Las preguntas revisadas se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos del examen con las 100 preguntas COMPLETAS
+        const examData = {
+            title: "Examen 1 - Práctica General",
+            questions: [
+                {
+                    id: 1,
+                    text: "¿Cuáles son las características del software?",
+                    options: [
+                        "a. El software está desarrollado o diseñado; No se fabrica en el sentido clásico.",
+                        "b. El software no se 'desgasta'.",
+                        "c. El software puede ser personalizado o personalizac.",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 2,
+                    text: "Los compiladores, los editores de software vienen bajo qué tipo de software?",
+                    options: [
+                        "a. Software del sistema",
+                        "b. Software de la aplicacion",
+                        "c. Software científico",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 3,
+                    text: "El software se define como ____.",
+                    options: [
+                        "a. Instrucciones",
+                        "b. Estructuras de datos",
+                        "c. Documentos",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 4,
+                    text: "¿Cuáles son las señales de que un proyecto de software está en problemas?",
+                    options: [
+                        "a. El alcance del producto está mal definic.",
+                        "b. Los plazos son poco realistas.",
+                        "c. Los cambios se gestionan mal.",
+                        "d. Todas las anteriores."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 5,
+                    text: "Usted está trabajando como gerente de proyecto. Tu empresa quiere desarrollar un proyecto. Usted también está involucrado en el equipo de planificación. ¿Cuál será tu primer paso en la planificación de proyectos?",
+                    options: [
+                        "a. Establecer los objetivos y alcance del producto.",
+                        "b. Determine las restricciones del proyecto.",
+                        "c. Selecciona el equipo.",
+                        "d. Ninguna de las anteriores."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 6,
+                    text: "¿Qué elemento de codificación se omite generalmente al final de la línea?",
+                    options: [
+                        "a. Convenciones de nombres",
+                        "b. Identificando",
+                        "c. Espacio en blanco",
+                        "d. Los operadores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 7,
+                    text: "Las reglas para escribir 'if-then-else', 'case-switch', 'while-until' y 'for' flujo de control se denominan ______.",
+                    options: [
+                        "a. Comentarios",
+                        "b. Funciones",
+                        "c. Longitud de línea y envoltura",
+                        "d. Estructura de control"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 8,
+                    text: "Haga coincidir la Lista 1 con la Lista 2 y elija la opción correcta.",
+                    options: [
+                        "a. 1-c, 2-a, 3-d, 4-b",
+                        "b. 1-c, 2-a, 3-b, 4-d",
+                        "c. 1-a, 2-c, 3-d, 4-b",
+                        "d. 1-b, 2-c, 3-a, 4-d"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 9,
+                    text: "Un proyecto puede ser caracterizado como ______.",
+                    options: [
+                        "a. Cada proyecto puede no tener un objetivo único y distinto.",
+                        "b. El proyecto es una actividad de rutina o operaciones diarias.",
+                        "c. El proyecto no viene con una hora de inicio y finalización.",
+                        "d. Ninguna de las anteriores."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 10,
+                    text: "Elija la opción correcta en términos de problemas relacionados con la responsabilidad profesional.",
+                    options: [
+                        "a. Confidencialidad",
+                        "b. Derechos de propiedad intelectual",
+                        "c. Ambos a y b",
+                        "d. Gestionando las relaciones con los clientes"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 11,
+                    text: "Los ingenieros de software no deben usar sus habilidades técnicas para hacer un mal uso de las computadoras de otras personas. Aquí el término uso incorrecto se refiere a:",
+                    options: [
+                        "a. Acceso no autorizado a material informático",
+                        "b. Modificación no autorizada de material informático.",
+                        "c. Discriminación de virus u otro malware.",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 12,
+                    text: "Explique qué se entiende por PRODUCTO con referencia a uno de los ocho principios según el Código de ética de ACM / IEEE.",
+                    options: [
+                        "a. El producto debe ser fácil de usar.",
+                        "b. Los ingenieros de software se asegurarán de que sus productos y las modificaciones relacionadas cumplan con los estándares profesionales más altos posibles.",
+                        "c. Los ingenieros de software se asegurarán de que sus productos y las modificaciones relacionadas satisfagan al cliente.",
+                        "d. Significa que el producto diseñado / creado debe estar fácilmente disponible."
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 13,
+                    text: "Identifique un dilema ético de las situaciones mencionadas a continuación:",
+                    options: [
+                        "a. Su empleador lanza un sistema crítico para la seguridad sin terminar la prueba del sistema.",
+                        "b. Negarse a emprender un proyecto.",
+                        "c. Acuerdo en principio con las políticas de la alta dirección.",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 14,
+                    text: "Identifique la afirmación correcta: 'Los ingenieros de software'",
+                    options: [
+                        "a. actuar de una manera que sea en el mejor interés de su experiencia y favor.",
+                        "b. actuar consistentemente con el interés público.",
+                        "c. Asegurar que sus productos solo cumplan con el SRS.",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 15,
+                    text: "Seleccione la declaración incorrecta: Los ingenieros de software deben ______.",
+                    options: [
+                        "a. No a sabiendas acepte trabajos que estén fuera de su competencia.",
+                        "b. No uses tus habilidades técnicas para hacer mal uso de las computadoras de otras personas.",
+                        "c. Ser dependientes de sus colegas.",
+                        "d. Mantener la integridad y la independencia en su juicio profesional."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 16,
+                    text: "La eficiencia en un producto de software no incluye _____",
+                    options: [
+                        "a. sensibilidad",
+                        "b. licenciamiento",
+                        "c. utilización de memoria",
+                        "d. Tiempo de procesamiento"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 17,
+                    text: "¿Cuál de estos no se encuentra entre los ocho principios seguidos por el Código de ética y práctica profesional de ingeniería de software?",
+                    options: [
+                        "a. PÚBLICO",
+                        "b. PROFESIÓN",
+                        "c. PRODUCTO",
+                        "d. AMBIENTE"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 18,
+                    text: "¿Qué es un software?",
+                    options: [
+                        "a. El software es un conjunto de programas.",
+                        "b. El software es documentación y configuración de datos.",
+                        "c. Tanto a como B",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 19,
+                    text: "¿Cuál de estos no tiene en cuenta la falla del software?",
+                    options: [
+                        "a. Aumento de la demanda",
+                        "b. Baja expectativa",
+                        "c. Aumento de la oferta",
+                        "d. Menos confiable y costoso"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 20,
+                    text: "¿Cuáles son los atributos de un buen software?",
+                    options: [
+                        "a. Mantenimiento del software",
+                        "b. Funcionalidad de software",
+                        "c. Desarrollo de software",
+                        "d. a y B"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 21,
+                    text: "¿Cuál de estas actividades de ingeniería de software no forma parte de los procesos de software?",
+                    options: [
+                        "a. Dependencia de software",
+                        "b. Desarrollo de software",
+                        "c. Validación de software",
+                        "d. Especificación de software"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 22,
+                    text: "¿Cuál de estos es incorrecto?",
+                    options: [
+                        "a. La ingeniería de software pertenece a la informática.",
+                        "b. La ingeniería de software es una parte de la forma más general de la ingeniería de sistemas.",
+                        "c. La informática pertenece a la ingeniería de software.",
+                        "d. La ingeniería de software se ocupa de los aspectos prácticos de desarrollar y entregar software útil."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 23,
+                    text: "¿Cuál de estos es verdad?",
+                    options: [
+                        "a. Los productos genéricos y los productos personalizados son tipos de productos de software.",
+                        "b. Los productos genéricos se producen por organización y se venden al mercado abierto.",
+                        "c. Los productos personalizados son encargados por clientes particulares.",
+                        "d. Todas las anteriores."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 24,
+                    text: "¿Cuál de estos no afecta a los diferentes tipos de software en su conjunto?",
+                    options: [
+                        "a. Heterogeneidad",
+                        "b. Flexibilidad",
+                        "c. Negocios y cambio social.",
+                        "d. Seguridad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 25,
+                    text: "¿Las nociones fundamentales de la ingeniería de software no tienen en cuenta?",
+                    options: [
+                        "a. Procesos de software",
+                        "b. Seguridad del software",
+                        "c. Reutilización de software",
+                        "d. Validación de Software"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 26,
+                    text: "¿Cuál de estos no es cierto?",
+                    options: [
+                        "a. La web ha llevado a la disponibilidad de servicios de software y la posibilidad de desarrollar sistemas basados en servicios altamente distribuidos.",
+                        "b. Los sistemas basados en web han conducido a la degradación de los lenguajes de programación.",
+                        "c. Web trae concepto de software como servicio.",
+                        "d. El sistema basado en la web debe ser desarrollado y entregado de manera incremental."
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 27,
+                    text: "Identifique un lenguaje de cuarta generación (4GL) a partir de lo que se indica a continuación.",
+                    options: [
+                        "a. FORTRAN",
+                        "b. COBOL",
+                        "c. Shell de unix",
+                        "d. C ++"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 28,
+                    text: "Organice las siguientes actividades para hacer un producto de software utilizando 4GT.",
+                    options: [
+                        "a. 1, 4, 3, 2",
+                        "b. 4, 3, 1, 2",
+                        "c. 4, 1, 3, 2",
+                        "d. 1, 3, 4, 2"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 29,
+                    text: "4GL es un ejemplo de procesamiento ______.",
+                    options: [
+                        "a. Caja blanca",
+                        "b. Caja negra",
+                        "c. Funcional",
+                        "d. Ambos b & c"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 30,
+                    text: "El modelo 4GT es un paquete de ______.",
+                    options: [
+                        "a. Herramientas de caja",
+                        "b. Herramientas de software",
+                        "c. Programas de software",
+                        "d. Documentación"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 31,
+                    text: "Modelo de proceso del software RAD significa ______.",
+                    options: [
+                        "a. Desarrollo rápido de aplicaciones.",
+                        "b. Desarrollo relativo de aplicaciones.",
+                        "c. Diseño de aplicaciones rápidas.",
+                        "d. Desarrollo de aplicaciones recientes."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 32,
+                    text: "¿Cuál es el modelo más simple de paradigma de desarrollo de software?",
+                    options: [
+                        "a. Modelo espiral",
+                        "b. Modelo de Big Bang",
+                        "c. Modelo V",
+                        "d. Modelo de cascada"
+                    ],
+                    correctAnswer: 3
+                },
+               {
+                    id: 33,
+                    text: "El modelo arquitectónico se deriva de cuál de estas fuentes?<br><br>" +
+                        "<strong>A)</strong> Información sobre el dominio de la aplicación para el software que se construirá;<br>" +
+                        "<strong>B)</strong> Elementos del modelo de requisitos específicos, como diagramas de flujo de datos o clases de análisis, sus relaciones y colaboraciones para el problema en cuestión;<br>" +
+                        "<strong>C)</strong> La disponibilidad de estilos y patrones arquitectónicos.",
+                    options: [
+                        "a. Tanto A y B",
+                        "b. Ambos B y C", 
+                        "c. Ambos A y C",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3  // d. Todo lo mencionado anteriormente
+                },
+                {
+                    id: 34,
+                    text: "¿Qué modelo también se conoce como modelo de verificación y validación?",
+                    options: [
+                        "a. Modelo de cascada",
+                        "b. Modelo de Big Bang",
+                        "c. Modelo V",
+                        "d. Modelo espiral"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 35,
+                    text: "¿Qué modelo no es adecuado para grandes proyectos de software pero es bueno para aprender y experimentar?",
+                    options: [
+                        "a. Modelo de Big Bang",
+                        "b. Modelo espiral",
+                        "c. Modelo iterativo",
+                        "d. Modelo de cascada"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 36,
+                    text: "¿A qué modelo también se le llama ciclo de vida clásico o modelo de cascada?",
+                    options: [
+                        "a. Desarrollo iterativo",
+                        "b. Desarrollo secuencial lineal",
+                        "c. Modelo RAD",
+                        "d. Desarrollo incremental"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 37,
+                    text: "¿Cuál es la tasa de actividad global efectiva promedio en un sistema de tipo E en evolución que es invariante durante la vida útil del producto?",
+                    options: [
+                        "a. Autorregulación",
+                        "b. Reduciendo la calidad",
+                        "c. Sistemas de retroalimentación",
+                        "d. Estabilidad organizacional"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 38,
+                    text: "Build & Fix Model es adecuado para los ejercicios de programación de ______ LOC (línea de código).",
+                    options: [
+                        "a. 100-200",
+                        "b. 200-400",
+                        "c. 400-1000",
+                        "d. por encima de 1000"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 39,
+                    text: "¿Cuál de los siguientes modelos no es adecuado para adaptarse a cualquier cambio?",
+                    options: [
+                        "a. Construir y arreglar el modelo",
+                        "b. Modelo de prototipos",
+                        "c. Modelo RAD",
+                        "d. Modelo de cascada"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 40,
+                    text: "¿Cuál no es uno de los tipos de prototipo de Modelo de Prototipos?",
+                    options: [
+                        "a. Prototipo horizontal",
+                        "b. Prototipo vertical",
+                        "c. Prototipo diagonal",
+                        "d. Prototipo de dominio"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 41,
+                    text: "¿Cuál de los siguientes no es una fase del modelo de prototipos?",
+                    options: [
+                        "a. Diseño rapido",
+                        "b. Codificación",
+                        "c. Refinamiento de prototipos",
+                        "d. Producto de ingeniero"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 42,
+                    text: "¿Cuál de las siguientes afirmaciones con respecto al modelo de construcción y reparación es incorrecta?",
+                    options: [
+                        "a. No hay espacio para el diseño estructurado.",
+                        "b. El código pronto se vuelve no apto para ser arreglado e inmutable",
+                        "c. El mantenimiento es prácticamente imposible.",
+                        "d. Se adapta bien a grandes proyectos."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 43,
+                    text: "Modelo RAD tiene",
+                    options: [
+                        "a. 2 fases",
+                        "b. 3 fases",
+                        "c. 5 fases",
+                        "d. 6 fases"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 44,
+                    text: "¿Cuál es el mayor inconveniente de usar el modelo RAD?",
+                    options: [
+                        "a. Se requieren desarrolladores / diseñadores altamente especializados y capacitados.",
+                        "b. Aumenta la reutilización de los componentes.",
+                        "c. Alienta la retroalimentación de cliente / cliente.",
+                        "d. Tanto a y c."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 45,
+                    text: "SDLC significa",
+                    options: [
+                        "a. Ciclo de vida del desarrollo de programas",
+                        "b. Ciclo de vida de desarrollo de sistemas",
+                        "c. Ciclo de vida del diseño de software",
+                        "d. Diseño del sistema ciclo de vida"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 46,
+                    text: "¿Qué modelo se puede seleccionar si el usuario está involucrado en todas las fases de SDLC?",
+                    options: [
+                        "a. Modelo de cascada",
+                        "b. Modelo de prototipos",
+                        "c. Modelo RAD",
+                        "d. ambos b & c"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 47,
+                    text: "¿Cuál de los siguientes no es un modelo de proceso evolutivo?",
+                    options: [
+                        "a. Modelo Espiral WINWIN",
+                        "b. Modelo incremental",
+                        "c. Modelo de desarrollo concurrente",
+                        "d. Todos son modelos de software evolutivos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 48,
+                    text: "El modelo incremental es el resultado de una combinación de elementos, ¿de qué dos modelos?",
+                    options: [
+                        "a. Construir y arreglar modelo y modelo de cascada",
+                        "b. Modelo lineal y modelo RAD",
+                        "c. Modelo lineal y modelo de prototipos.",
+                        "d. Modelo de cascada y modelo de RAD"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 49,
+                    text: "¿Cuál es la principal ventaja de usar el modelo incremental?",
+                    options: [
+                        "a. El cliente puede responder a cada incremento",
+                        "b. Más fácil de probar y depurar",
+                        "c. Se utiliza cuando existe la necesidad de llevar un producto al mercado antes de tiempo.",
+                        "d. Ambos b & c"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 50,
+                    text: "El modelo espiral fue propuesto originalmente por",
+                    options: [
+                        "a. IBM",
+                        "b. Barry Boehm",
+                        "c. Periodista",
+                        "d. Royce"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 51,
+                    text: "El modelo en espiral tiene dos dimensiones: ______ y ______.",
+                    options: [
+                        "a. diagonal, angular",
+                        "b. radial, perpendicular",
+                        "c. radial, angular",
+                        "d. diagonal, perpendicular"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 52,
+                    text: "¿En qué se diferencia WINWIN Spiral Model de Spiral Model?",
+                    options: [
+                        "a. Define las tareas necesarias para definir recursos, líneas de tiempo y otra información relacionada con el proyecto.",
+                        "b. Define un conjunto de actividades de negociación al comienzo de cada paso alrededor de la espiral.",
+                        "c. Define las tareas requeridas para evaluar los riesgos tanto técnicos como de gestión.",
+                        "d. Define las tareas necesarias para construir, probar, instalar y proporcionar soporte al usuario."
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 53,
+                    text: "Identificar la desventaja del modelo espiral.",
+                    options: [
+                        "a. No funciona bien para proyectos más pequeños.",
+                        "b. Gran cantidad de análisis de riesgo",
+                        "c. Fuerte aprobación y control de documentación.",
+                        "d. La funcionalidad adicional se puede agregar en una fecha posterior"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 54,
+                    text: "¿En qué se diferencia el modelo incremental del modelo espiral?",
+                    options: [
+                        "a. El progreso se puede medir para el modelo incremental.",
+                        "b. Los requisitos cambiantes se pueden acomodar en el modelo incremental.",
+                        "c. Los usuarios pueden ver el sistema temprano en el modelo incremental.",
+                        "d. no hay diferencia entre estos dos"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 55,
+                    text: "Si tuviera que crear aplicaciones cliente / servidor, ¿qué modelo elegiría?",
+                    options: [
+                        "a. Modelo Espiral WINWIN",
+                        "b. Modelo espiral",
+                        "c. Modelo concurrente",
+                        "d. Modelo incremental"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 56,
+                    text: "La selección de un modelo se basa en",
+                    options: [
+                        "a. Requerimientos",
+                        "b. Equipo de desarrollo",
+                        "c. Usuarios",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 57,
+                    text: "¿Qué dos modelos no permiten definir requisitos al principio del ciclo?",
+                    options: [
+                        "a. Cascada y RAD",
+                        "b. Prototipos y Espiral",
+                        "c. Prototipado y RAD",
+                        "d. Cascada y espiral"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 58,
+                    text: "¿Cuál del siguiente modelo de ciclo de vida se puede elegir si el equipo de desarrollo tiene menos experiencia en proyectos similares?",
+                    options: [
+                        "a. Espiral",
+                        "b. Cascada",
+                        "c. RAD",
+                        "d. Modelo de mejora iterativa"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 59,
+                    text: "Si fuera un desarrollador líder de una compañía de software y se le solicita que envíe un proyecto / producto dentro de un marco de tiempo estipulado sin barreras de costo, ¿qué modelo seleccionaría?",
+                    options: [
+                        "a. Cascada",
+                        "b. Espiral",
+                        "c. RAD",
+                        "d. Incremental"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 60,
+                    text: "¿Qué dos de los siguientes modelos no podrán dar el resultado deseado si la participación del usuario no está involucrada?",
+                    options: [
+                        "a. Cascada y espiral",
+                        "b. RAD y espiral",
+                        "c. RAD y cascada",
+                        "d. RAD y prototipado"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 61,
+                    text: "¿Cuál de los siguientes no está definido en un buen documento de especificación de requisitos de software (SRS)?",
+                    options: [
+                        "a. Requerimiento funcional",
+                        "b. Requisito no funcional",
+                        "c. Objetivos de implementación",
+                        "d. Algoritmo para la implementación de software"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 62,
+                    text: "¿Cuál de las siguientes es la comprensión de las limitaciones de los productos de software, los problemas relacionados con el sistema de aprendizaje o los cambios que deben realizarse en los sistemas existentes de antemano, identificando y abordando el impacto del proyecto en la organización y el personal, etc.?",
+                    options: [
+                        "a. Diseño de software",
+                        "b. Estudio de factibilidad",
+                        "c. Recolección de requisitos",
+                        "d. Análisis del sistema"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 63,
+                    text: "¿Qué proyecto se emprende como consecuencia de una solicitud específica de un cliente?",
+                    options: [
+                        "a. Proyectos de desarrollo de conceptos",
+                        "b. Proyectos de mejora de aplicaciones",
+                        "c. Nuevos proyectos de desarrollo de aplicaciones.",
+                        "d. Proyectos de mantenimiento de aplicaciones"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 64,
+                    text: "El proceso de ingeniería de requisitos incluye cuál de estos pasos?",
+                    options: [
+                        "a. Estudio de factibilidad",
+                        "b. Recolección de requisitos",
+                        "c. Especificación y validación de requisitos de software",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 65,
+                    text: "La especificación de requisitos de software (SRS) también se conoce como especificación de",
+                    options: [
+                        "a. Prueba de caja blanca",
+                        "b. Test de aceptación",
+                        "c. Pruebas integradas",
+                        "d. Prueba de caja negra"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 66,
+                    text: "¿En qué proceso de obtención los desarrolladores discuten con el cliente y los usuarios finales y conocen sus expectativas del software?",
+                    options: [
+                        "a. Recolección de requisitos",
+                        "b. Requisitos de organización",
+                        "c. Negociación y discusión",
+                        "d. Documentación"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 67,
+                    text: "Si los requisitos son fácilmente comprensibles y definidos, ¿qué modelo es el más adecuado?",
+                    options: [
+                        "a. Modelo espiral",
+                        "b. Modelo de cascada",
+                        "c. Modelo de prototipado",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 68,
+                    text: "¿Qué documento crea el analista del sistema después de que se recopilan los requisitos de varios interesados?",
+                    options: [
+                        "a. Especificación de requisitos de software",
+                        "b. Validación de requisitos de software",
+                        "c. Estudio de factibilidad",
+                        "d. Recolección de requisitos"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 69,
+                    text: "¿Cuál está enfocado hacia el objetivo de la organización?",
+                    options: [
+                        "a. Estudio de factibilidad",
+                        "b. Recolección de requisitos",
+                        "c. Especificación de requisitos de software",
+                        "d. Validación de requisitos de software"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 70,
+                    text: "¿Qué documentación funciona como herramienta clave para el diseñador de software, el desarrollador y su equipo de prueba para llevar a cabo sus tareas respectivas?",
+                    options: [
+                        "a. Documentación de requisitos",
+                        "b. Documentación del usuario",
+                        "c. Documentación de diseño de software",
+                        "d. Documentación técnica"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 71,
+                    text: "¿Cuál es el significado de la obtención de requisitos en ingeniería de software?",
+                    options: [
+                        "a. Recopilación de requisitos.",
+                        "b. Comprensión del requisito.",
+                        "c. Obteniendo los requerimientos del cliente.",
+                        "d. Todas las anteriores."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 72,
+                    text: "¿Cuál de las siguientes es / es técnica de estimación de proyecto?",
+                    options: [
+                        "a. Técnica de estimación empírica.",
+                        "b. Técnica de estimación heurística.",
+                        "c. Técnica de estimación analítica.",
+                        "d. Todas las anteriores."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 73,
+                    text: "¿Qué herramientas son útiles en todas las etapas de SDLC, para la recopilación de requisitos para pruebas y documentación?",
+                    options: [
+                        "a. Herramientas mayúsculas",
+                        "b. Herramientas de caja baja",
+                        "c. Herramientas de caja integradas",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 74,
+                    text: "¿Cuáles son los tipos de requisitos de desarrollo de software?",
+                    options: [
+                        "a. Disponibilidad",
+                        "b. Confiabilidad",
+                        "c. Usabilidad",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 75,
+                    text: "Seleccione el requisito específico del desarrollador?",
+                    options: [
+                        "a. Potabilidad",
+                        "b. Mantenibilidad",
+                        "c. Disponibilidad",
+                        "d. Tanto a como B"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 76,
+                    text: "FAST significa",
+                    options: [
+                        "a. Técnica funcional de especificación de aplicaciones",
+                        "b. Técnica de especificación de aplicación rápida",
+                        "c. Técnica de especificación de aplicación facilitada",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 77,
+                    text: "QFD significa",
+                    options: [
+                        "a. diseño de funciones de calidad",
+                        "b. desarrollo de la función de calidad",
+                        "c. Despliegue de la función de calidad",
+                        "d. ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 78,
+                    text: "Los requisitos del sistema del usuario son las partes de qué documento?",
+                    options: [
+                        "a. SDD",
+                        "b. SRS",
+                        "c. DDD",
+                        "d. DFD"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 79,
+                    text: "¿Cuál es uno de los actores más importantes de los siguientes?",
+                    options: [
+                        "a. Personal de nivel de entrada",
+                        "b. Accionista de nivel medio",
+                        "c. Gerentes",
+                        "d. Usuarios del software."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 80,
+                    text: "¿Cuál de los siguientes es un requisito funcional?",
+                    options: [
+                        "a. Mantenibilidad",
+                        "b. Portabilidad",
+                        "c. Robustez",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 81,
+                    text: "¿Cuál de los siguientes es un requisito que se ajusta al módulo de un desarrollador?",
+                    options: [
+                        "a. Disponibilidad",
+                        "b. Probabilidad",
+                        "c. Usabilidad",
+                        "d. Flexibilidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 82,
+                    text: "Considere un sistema donde, un sensor de calor detecta una intrusión y alerta a la compañía de seguridad. ¿Qué tipo de requisito está proporcionando el sistema?",
+                    options: [
+                        "a. Funcional",
+                        "b. No funcional",
+                        "c. Requisito conocido",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 83,
+                    text: "¿Cuál de las siguientes afirmaciones explica la portabilidad en los requisitos no funcionales?",
+                    options: [
+                        "a. Es un grado en que el software que se ejecuta en una plataforma se puede convertir fácilmente para ejecutarse en otra plataforma.",
+                        "b. Se puede mejorar mediante el uso de idiomas, sistemas operativos y herramientas universalmente disponibles y estandarizadas.",
+                        "c. La capacidad del sistema para comportarse de forma coherente de una manera aceptable para el usuario cuando se opera dentro del entorno para el que se diseñó el sistema.",
+                        "d. Tanto a como B"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 84,
+                    text: "Elija la declaración incorrecta con respecto al requisito no funcional (NFR).",
+                    options: [
+                        "a. Enfoque orientado al producto: enfoque en la calidad del sistema (o software)",
+                        "b. Enfoque orientado al proceso: enfoque en cómo se pueden usar los NFR en el proceso de diseño",
+                        "c. Enfoque cuantitativo: encuentre escalas medibles para los atributos de funcionalidad",
+                        "d. Enfoque cualitativo - Estudie varias relaciones entre los objetivos de calidad"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 85,
+                    text: "¿Cuántos esquemas de clasificación se han desarrollado para los NFR (requisito no funcional)?",
+                    options: [
+                        "a. Dos",
+                        "b. Tres",
+                        "c. Cuatro",
+                        "d. Cinco"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 86,
+                    text: "Según los componentes de FURPS +, ¿cuál de los siguientes no pertenece a S?",
+                    options: [
+                        "a. Probabilidad",
+                        "b. Eficiencia de velocidad",
+                        "c. Utilidad",
+                        "d. Instalabilidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 87,
+                    text: "¿Cuáles son las cuatro dimensiones de la fiabilidad?",
+                    options: [
+                        "a. Usabilidad, Fiabilidad, Seguridad, Flexibilidad.",
+                        "b. Disponibilidad, fiabilidad, mantenibilidad, seguridad.",
+                        "c. Disponibilidad, fiabilidad, seguridad, seguridad.",
+                        "d. Seguridad, Seguridad, Probabilidad, Usabilidad."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 88,
+                    text: "¿Cuál es el primer paso de la obtención de requisitos?",
+                    options: [
+                        "a. Identificando a los interesados",
+                        "b. Listado de requisitos",
+                        "c. Recopilación de requisitos",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 89,
+                    text: "Comenzando de menos a más importante, elija el orden de las partes interesadas.<br><br>" +
+                        "<strong>i.</strong> Gerentes<br>" +
+                        "<strong>ii.</strong> Personal de nivel de entrada<br>" +
+                        "<strong>iii.</strong> Usuarios<br>" +
+                        "<strong>iv.</strong> Accionista de nivel medio",
+                    options: [
+                        "a. i, ii, iv, iii",
+                        "b. i, ii, iii, iv", 
+                        "c. ii, iv, i, iii",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2  // La respuesta correcta es c. ii, iv, i, iii
+                },
+                {
+                    id: 90,
+                    text: "Organice las tareas involucradas en la obtención de requisitos de una manera apropiada.<br><br>" +
+                        "<strong>i.</strong> Consolidación<br>" +
+                        "<strong>ii.</strong> Priorización<br>" + 
+                        "<strong>iii.</strong> Recopilación de requisitos<br>" +
+                        "<strong>iv.</strong> Evaluación",
+                    options: [
+                        "a. iii, i, ii, iv",
+                        "b. iii, iv, ii, i",
+                        "c. iii, ii, iv, i", 
+                        "d. ii, iii, iv, i"
+                    ],
+                    correctAnswer: 1  // b. iii, iv, ii, i
+                },
+                {
+                    id: 91,
+                    text: "¿Qué diseño identifica el software como un sistema con muchos componentes que interactúan entre sí?",
+                    options: [
+                        "a. Diseño arquitectónico",
+                        "b. Diseño de alto nivel",
+                        "c. Diseño detallado",
+                        "d. Ambos B y C"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 92,
+                    text: "La herramienta CASE significa ______.",
+                    options: [
+                        "a. Ingeniería de software asistida por computadora",
+                        "b. Ingeniería de software asistida por componentes",
+                        "c. Ingeniería constructiva de software asistido",
+                        "d. Ingeniería de Software de Análisis Computacional"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 93,
+                    text: "FAST significa ______.",
+                    options: [
+                        "a. Técnica de software de aplicación facilitada.",
+                        "b. Técnica de software de aplicación funcional.",
+                        "c. Facilitado técnica de especificación de aplicaciones.",
+                        "d. Ninguna de las anteriores."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 94,
+                    text: "Abrevia el término CASO.",
+                    options: [
+                        "a. Ingeniería de software autorizada por computadora",
+                        "b. Ingeniería de software asistida por computadora",
+                        "c. Ingeniería de Software Autorizada Común",
+                        "d. Ingeniería de software con asistencia común"
+                    ],
+                    correctAnswer: 1
+                },
+                                {
+                    id: 95,
+                    text: "¿Qué se describe por medio de DFD como se estudió anteriormente y se representa en forma algebraica?",
+                    options: [
+                        "a. Flujo de datos",
+                        "b. Almacenamiento de datos",
+                        "c. Estructuras de datos",
+                        "d. Elementos de datos"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 96,
+                    text: "Una entidad en el Modelo ER es un ser del mundo real, que tiene algunas propiedades llamadas____.",
+                    options: [
+                        "a. Atributos",
+                        "b. Relación",
+                        "c. Dominio",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 97,
+                    text: "El número máximo de objetos que pueden participar en una relación se denomina_____.",
+                    options: [
+                        "a. Cardinalidad",
+                        "b. Atributos",
+                        "c. Operaciones",
+                        "d. Transformadores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 98,
+                    text: "Si una aplicación permite ejecutar varias instancias de sí misma, aparecen en la pantalla, ya que las ventanas separadas se denominan _____.",
+                    options: [
+                        "a. Ventana",
+                        "b. Pestañas",
+                        "c. Menú",
+                        "d. Cursor"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 99,
+                    text: "Un marco de proceso genérico para la ingeniería de software abarca cinco actividades. ¿Qué son esas actividades?",
+                    options: [
+                        "a. Comunicación, gestión de riesgos, medición, producción, despliegue.",
+                        "b. Comunicación, planificación, modelado, construcción, despliegue.",
+                        "c. Análisis, diseño, programación, depuración, mantenimiento.",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 100,
+                    text: "Boehm sugiere un enfoque que aborde los objetivos del proyecto, los hitos y los cronogramas, las responsabilidades, los enfoques de gestión y técnicos y los recursos necesarios. Este principio se llama _____.",
+                    options: [
+                        "a. Principio W3HH",
+                        "b. Principio de la OMS",
+                        "c. Principio W5HH",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                }
+            ]
+        };
+
+        // Variables de estado
+        let currentExam = null;
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let startTime = null;
+        let timerInterval = null;
+
+        // Elementos DOM
+        const examContainer = document.getElementById('exam-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreElement = document.getElementById('score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const incorrectAnswersElement = document.getElementById('incorrect-answers');
+        const percentageElement = document.getElementById('percentage');
+        const totalTimeElement = document.getElementById('total-time');
+        const timerElement = document.getElementById('timer');
+        const restartBtn = document.getElementById('restart-btn');
+        const reviewBtn = document.getElementById('review-btn');
+        const reviewQuestionsContainer = document.getElementById('review-questions');
+
+        // Función para mezclar preguntas aleatoriamente
+        function shuffleQuestions(questions) {
+            const shuffled = [...questions];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Función para iniciar el examen
+        function startExam() {
+            currentExam = examData;
+            shuffledQuestions = shuffleQuestions(examData.questions);
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            currentQuestionIndex = 0;
+            
+            // Iniciar temporizador
+            startTime = new Date();
+            startTimer();
+            
+            examContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            
+            loadQuestion();
+            updateProgressBar();
+        }
+
+        // Función para el temporizador
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const elapsed = Math.floor((now - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                timerElement.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Función para detener el temporizador
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const endTime = new Date();
+            const totalTime = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            totalTimeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Función para cargar la pregunta actual
+        function loadQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+            questionText.textContent = `${question.id}. ${question.text}`;
+            
+            // Actualizar contador de preguntas
+            questionCounter.textContent = `Pregunta ${currentQuestionIndex + 1} de ${shuffledQuestions.length}`;
+            
+            // Limpiar opciones anteriores y feedback
+            optionsContainer.innerHTML = '';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'option';
+                input.value = index;
+                input.id = `option-${index}`;
+                input.checked = userAnswers[currentQuestionIndex] === index;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `option-${index}`;
+                label.textContent = option;
+                
+                optionElement.appendChild(input);
+                optionElement.appendChild(label);
+                
+                optionElement.addEventListener('click', () => {
+                    document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    optionElement.classList.add('selected');
+                    input.checked = true;
+                    userAnswers[currentQuestionIndex] = index;
+                    
+                    // Mostrar feedback inmediato
+                    showFeedback(question, index);
+                    
+                    // Habilitar el botón de siguiente
+                    nextBtn.disabled = false;
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Actualizar estado de los botones
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
+            
+            // Mostrar u ocultar botón de finalizar
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+            
+            updateProgressBar();
+        }
+
+        // Función para mostrar feedback inmediato
+        function showFeedback(question, selectedAnswer) {
+            // Remover feedback anterior
+            const existingFeedback = document.querySelector('.feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+            
+            const feedback = document.createElement('div');
+            const isCorrect = selectedAnswer === question.correctAnswer;
+            
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.textContent = isCorrect ? 
+                '✅ ¡Correcto! Has seleccionado la respuesta correcta.' : 
+                '❌ Incorrecto. La respuesta correcta es: ' + question.options[question.correctAnswer];
+            
+            optionsContainer.appendChild(feedback);
+        }
+
+        // Función para actualizar la barra de progreso
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Función para mostrar resultados
+        function showResults() {
+            stopTimer();
+            
+            let correctCount = 0;
+            
+            shuffledQuestions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    correctCount++;
+                }
+            });
+            
+            const totalQuestions = shuffledQuestions.length;
+            const score = `${correctCount}/${totalQuestions}`;
+            const percentage = ((correctCount / totalQuestions) * 100).toFixed(1);
+            
+            scoreElement.textContent = score;
+            correctAnswersElement.textContent = correctCount;
+            incorrectAnswersElement.textContent = totalQuestions - correctCount;
+            percentageElement.textContent = `${percentage}%`;
+            
+            examContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+        }
+
+        // Función para reiniciar el examen
+        function restartExam() {
+            shuffledQuestions = shuffleQuestions(examData.questions);
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            currentQuestionIndex = 0;
+            
+            // Reiniciar temporizador
+            startTime = new Date();
+            startTimer();
+            
+            examContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            reviewQuestionsContainer.style.display = 'none';
+            
+            loadQuestion();
+            updateProgressBar();
+        }
+
+        // Función para revisar respuestas
+        function reviewAnswers() {
+            reviewQuestionsContainer.innerHTML = '';
+            reviewQuestionsContainer.style.display = 'block';
+            
+            shuffledQuestions.forEach((question, index) => {
+                const reviewItem = document.createElement('div');
+                const isCorrect = userAnswers[index] === question.correctAnswer;
+                
+                reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                let reviewHTML = `
+                    <h4>Pregunta ${question.id}</h4>
+                    <p><strong>${question.text}</strong></p>
+                    <p>Tu respuesta: ${userAnswers[index] !== null ? question.options[userAnswers[index]] : 'No respondida'}</p>
+                    <p>Respuesta correcta: ${question.options[question.correctAnswer]}</p>
+                    <p><strong>${isCorrect ? '✅ Correcto' : '❌ Incorrecto'}</strong></p>
+                `;
+                
+                reviewItem.innerHTML = reviewHTML;
+                reviewQuestionsContainer.appendChild(reviewItem);
+            });
+            
+            // Desplazar hacia la sección de revisión
+            reviewQuestionsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Event Listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        });
+        
+        finishBtn.addEventListener('click', showResults);
+        
+        restartBtn.addEventListener('click', restartExam);
+        
+        reviewBtn.addEventListener('click', reviewAnswers);
+
+        // Iniciar el examen automáticamente
+        startExam();
+
+        // Hacer la función global para que index.html pueda llamarla
+        window.initializeExam = startExam;
+    </script>
+</body>
+</html>

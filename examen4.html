@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen 4 - CENEVAL</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background-color: var(--warning);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background-color: #e67e22;
+        }
+        
+        .exam-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .exam-header h2 {
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--secondary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f9f9f9;
+            border-color: #ccc;
+        }
+        
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: var(--secondary);
+        }
+        
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .exam-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: none;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+        }
+        
+        .score-details {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .correct {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .incorrect {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .review-questions {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .review-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .review-item.correct {
+            border-left: 4px solid var(--success);
+        }
+        
+        .review-item.incorrect {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .timer {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .exam-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .exam-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .exam-controls .btn {
+                width: 100%;
+            }
+            
+            .option {
+                padding: 12px;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <a href="index.html" class="back-btn">← Volver al Menú Principal</a>
+            <div class="timer" id="timer">Tiempo: 00:00</div>
+        </div>
+
+        <div class="exam-container" id="exam-container">
+            <div class="exam-header">
+                <h2 id="exam-title">Examen 4 - Cuarta Práctica</h2>
+                <div id="question-counter">Pregunta 1 de 100</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text" id="question-text">Cargando pregunta...</div>
+                <div class="options" id="options-container">
+                    <!-- Las opciones se cargarán dinámicamente -->
+                </div>
+            </div>
+            
+            <div class="exam-controls">
+                <button class="btn btn-warning" id="prev-btn" disabled>Anterior</button>
+                <button class="btn" id="next-btn">Siguiente</button>
+                <button class="btn btn-success" id="finish-btn" style="display: none;">Finalizar Examen</button>
+            </div>
+        </div>
+        
+        <div class="results-container" id="results-container">
+            <h2>Resultados del Examen 4</h2>
+            <div class="score" id="score">0/100</div>
+            <div class="score-details">
+                <p><span class="correct" id="correct-answers">0</span> respuestas correctas</p>
+                <p><span class="incorrect" id="incorrect-answers">0</span> respuestas incorrectas</p>
+                <p><span id="percentage">0%</span> de efectividad</p>
+                <p>Tiempo total: <span id="total-time">00:00</span></p>
+            </div>
+            <button class="btn" id="restart-btn">Volver a Intentar</button>
+            <button class="btn btn-warning" id="review-btn">Revisar Respuestas</button>
+            
+            <div class="review-questions" id="review-questions" style="display: none;">
+                <!-- Las preguntas revisadas se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos del examen 4 con las 100 preguntas COMPLETAS
+        const examData = {
+            title: "Examen 4 - Cuarta Práctica",
+            questions: [
+                {
+                    id: 1,
+                    text: "¿Cuál de los siguientes términos es una medida de la probabilidad de que el sistema cause un accidente?",
+                    options: [
+                        "a. Riesgo",
+                        "b. Probabilidad de peligro",
+                        "c. Accidente",
+                        "d. Dañar"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 2,
+                    text: "Una debilidad en un sistema informático que puede ser explotada para causar pérdidas o daños se conoce como?",
+                    options: [
+                        "a. Vulnerabilidad",
+                        "b. Ataque",
+                        "c. Amenaza",
+                        "d. Exposición"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 3,
+                    text: "Un sistema de verificación de contraseñas que no permite contraseñas de usuarios que sean nombres propios o palabras que normalmente se incluyen en un diccionario es un ejemplo de _____ con respecto a los sistemas de seguridad.",
+                    options: [
+                        "a. riesgo",
+                        "b. controlar",
+                        "c. ataque",
+                        "d. activo"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 4,
+                    text: "¿Cuántas etapas hay en la especificación de requisitos impulsada por el riesgo?",
+                    options: [
+                        "a. Tres",
+                        "b. cuatro",
+                        "c. cinco",
+                        "d. seis"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 5,
+                    text: "¿Cómo se define la confiabilidad del software?",
+                    options: [
+                        "a. hora",
+                        "b. eficiencia",
+                        "c. calidad",
+                        "d. velocidad"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 6,
+                    text: "Idoneidad, precisión, interpolabilidad y seguridad: ¿qué tipo de atributo de calidad es ISO 9126?",
+                    options: [
+                        "a. Confiabilidad",
+                        "b. Eficiencia",
+                        "c. Funcionalidad",
+                        "d. Usabilidad"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 7,
+                    text: "El comportamiento del tiempo y el comportamiento de los recursos se encuentran bajo el atributo de calidad de ISO 9126?",
+                    options: [
+                        "a. Confiabilidad",
+                        "b. Eficiencia",
+                        "c. Funcionalidad",
+                        "d. Usabilidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 8,
+                    text: "NHPP significa",
+                    options: [
+                        "a. Producto de Poisson no homogéneo",
+                        "b. Producto de Poisson no heterogéneo",
+                        "c. Proceso de Poisson no heterogéneo",
+                        "d. Proceso de Poisson no homogéneo"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 9,
+                    text: "El modelo CMM es una técnica para",
+                    options: [
+                        "a. Mantener automáticamente la fiabilidad del software.",
+                        "b. Mejorar el proceso del software.",
+                        "c. prueba el software",
+                        "d. todos los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 10,
+                    text: "¿Qué tipo de falla permanece en el sistema por algún tiempo y luego desaparece?",
+                    options: [
+                        "a. Permanente",
+                        "b. Transitorio",
+                        "c. Intermitente",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 11,
+                    text: "¿Cuál de los siguientes enfoques se utilizan para lograr sistemas confiables?",
+                    options: [
+                        "a. Prevención de fallos",
+                        "b. Eliminación de fallos",
+                        "c. Tolerancia a fallos",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 12,
+                    text: "Se dice que un sistema que mantiene su integridad mientras acepta una interrupción temporal de su funcionamiento se encuentra en un estado de",
+                    options: [
+                        "a. Tolerancia total a los fallos",
+                        "b. Degradación elegante",
+                        "c. Fail Soft",
+                        "d. A prueba de fallos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 13,
+                    text: "¿Cuál de las siguientes comprobaciones de detección de errores no forma parte de la detección de aplicaciones?",
+                    options: [
+                        "a. Cheques de hardware",
+                        "b. Controles de tiempo",
+                        "c. Verificaciones de reversión",
+                        "d. Controles de codificación"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 14,
+                    text: "El manejo de excepciones es un tipo de",
+                    options: [
+                        "a. mecanismo de recuperación de errores hacia adelante",
+                        "b. mecanismo de recuperación de errores hacia atrás",
+                        "c. Todos los mencionados",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 15,
+                    text: "La no ocurrencia de alteración impropia de la información se conoce como",
+                    options: [
+                        "a. Confiabilidad disponible",
+                        "b. Confiabilidad Confidencial",
+                        "c. Confiabilidad mantenible",
+                        "d. Confiabilidad Integral"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 16,
+                    text: "En la programación de la versión N, que es la generación independiente de N, el valor de N es",
+                    options: [
+                        "a. mayor que 1",
+                        "b. menos que 1",
+                        "c. mayor que 2",
+                        "d. menos de 2"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 17,
+                    text: "En la tolerancia a fallos basada en registros, los registros de eventos no determinados se guardan y se reproducen en caso de error.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 18,
+                    text: "Todas las técnicas tolerantes a fallas se basan en",
+                    options: [
+                        "a. Integridad",
+                        "b. Confianza",
+                        "c. Redundancia",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 19,
+                    text: "Es imperativo que los procesos de comunicación alcancen puntos de recuperación consistentes para evitar el efecto _____, con un mecanismo de recuperación de errores hacia atrás.",
+                    options: [
+                        "a. Estático",
+                        "b. Dinámica",
+                        "c. dominó",
+                        "d. Torbellino"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 20,
+                    text: "¿Cuál no es un modelo de calidad de software?",
+                    options: [
+                        "a. ISO 9000",
+                        "b. Modelo de McCall",
+                        "c. Modelo boehm",
+                        "d. ISO 9126"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 21,
+                    text: "¿Cuántos niveles están presentes en CMM?",
+                    options: [
+                        "a. Tres",
+                        "b. cuatro",
+                        "c. cinco",
+                        "d. seis"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 22,
+                    text: "¿Qué nivel de CMM es para la gestión de procesos?",
+                    options: [
+                        "a. Inicial",
+                        "b. Repetible",
+                        "c. Definido",
+                        "d. Optimizando"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 23,
+                    text: "En ISO 9126, el comportamiento del tiempo y la utilización de recursos son parte de",
+                    options: [
+                        "a. mantenibilidad",
+                        "b. portabilidad",
+                        "c. eficiencia",
+                        "d. usabilidad"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 24,
+                    text: "¿Cuál de los siguientes no es un modelo probabilístico?",
+                    options: [
+                        "a. Error de siembra",
+                        "b. NHPP",
+                        "c. Dominio de entrada",
+                        "d. Métrica del software de Halstead"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 25,
+                    text: "La confiabilidad del software se define con respecto a",
+                    options: [
+                        "a. hora",
+                        "b. loco",
+                        "c. fallas",
+                        "d. calidad"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 26,
+                    text: "Failure In Time (FIT) es otra forma de informar",
+                    options: [
+                        "a. MTTR",
+                        "b. MTTF",
+                        "c. MTSF",
+                        "d. MTBF"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 27,
+                    text: "El tiempo medio de reparación (MTTR) es el tiempo necesario para reparar un módulo de hardware defectuoso.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 28,
+                    text: "IMC Networks es un fabricante líder y certificado de soluciones de conectividad LAN / WAN para redes ópticas y para empresas, telecomunicaciones y proveedores de servicios.",
+                    options: [
+                        "a. Sistemas de telco",
+                        "b. D-Link",
+                        "c. Arista Networks",
+                        "d. ISO 9001"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 29,
+                    text: "¿Cuáles son las cualidades de un buen software?",
+                    options: [
+                        "a. Portabilidad",
+                        "b. Reusabilidad",
+                        "c. Interoperabilidad",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 30,
+                    text: "La ingeniería de software basada en la reutilización es una estrategia de ingeniería de software donde el proceso de desarrollo está orientado a reutilizar el software existente.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 31,
+                    text: "El movimiento de código abierto ha significado que hay una gran base de código reutilizable disponible en",
+                    options: [
+                        "a. libre de costo",
+                        "b. bajo costo",
+                        "c. Alto costo",
+                        "d. corto periodo de tiempo"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 32,
+                    text: "Considere el ejemplo y categorícelo en consecuencia, 'Un sistema de coincidencia de patrones desarrollado como parte de un sistema de procesamiento de texto puede reutilizarse en un sistema de gestión de bases de datos'.",
+                    options: [
+                        "a. Reutilización del sistema de aplicación.",
+                        "b. Reutilización de componentes",
+                        "c. Reutilización de objetos y funciones.",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 33,
+                    text: "COTS significa",
+                    options: [
+                        "a. Sistemas comerciales listos para usar",
+                        "b. Estados comerciales fuera de la plataforma",
+                        "c. Estado fuera de sistema comercial",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 34,
+                    text: "Medios de reutilización de productos COTS",
+                    options: [
+                        "a. Las bibliotecas de clases y funciones que implementan abstracciones de uso común están disponibles para su reutilización",
+                        "b. Los componentes compartidos se entrelazan en una aplicación en diferentes lugares cuando se compila el programa",
+                        "c. Los sistemas a gran escala que encapsulan la funcionalidad y las reglas de negocios genéricos están configurados para una organización",
+                        "d. Los sistemas se desarrollan configurando e integrando sistemas de aplicaciones existentes."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 35,
+                    text: ".NET son específicos para cada plataforma?",
+                    options: [
+                        "a. Java",
+                        "b. Mac OS",
+                        "c. Microsoft",
+                        "d. LINUX"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 36,
+                    text: "¿Cuál de las siguientes es una estructura genérica que se extiende para crear un subsistema o aplicación más específica?",
+                    options: [
+                        "a. Reutilización de software",
+                        "b. Lenguaje de programación orientado a objetos",
+                        "c. Marco de referencia",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 37,
+                    text: "'Un sistema de pedido puede adaptarse para hacer frente a un proceso de pedido centralizado en una empresa y un proceso distribuido en otra'. ¿A qué categoría pertenece el ejemplo?",
+                    options: [
+                        "a. Proceso de especialización",
+                        "b. Especialización de plataforma",
+                        "c. Especialización ambiental",
+                        "d. Especialización funcional"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 38,
+                    text: "¿Qué son los sistemas de aplicación genéricos que pueden diseñarse para soportar un tipo de negocio, actividad particular o, en ocasiones, una empresa completa?",
+                    options: [
+                        "a. Sistemas de solución COTS",
+                        "b. Sistemas integrados COTS",
+                        "c. Sistemas ERP",
+                        "d. Tanto la solución COTS como los sistemas integrados COTS"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 39,
+                    text: "¿Cuál de las siguientes no es una ventaja de la reutilización del software?",
+                    options: [
+                        "a. costos mas bajos",
+                        "b. desarrollo de software más rápido",
+                        "c. alta efectividad",
+                        "d. menores riesgos"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 40,
+                    text: "Los marcos son un enfoque efectivo para la reutilización, pero son ______ para introducir en los procesos de desarrollo de software.",
+                    options: [
+                        "a. difícil",
+                        "b. costoso",
+                        "c. no fidedigno",
+                        "d. difícil y caro"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 41,
+                    text: "¿Cuál de las siguientes opciones no se proporciona mediante métodos formales?",
+                    options: [
+                        "a. proporcionando marcos",
+                        "b. sistemas de verificación",
+                        "c. proporcionar inversores",
+                        "d. Proporcionando marcos y sistemas de verificación."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 42,
+                    text: "______ son declaraciones que se pueden interpretar de varias maneras.",
+                    options: [
+                        "a. Contradicciones",
+                        "b. Ambigüedades",
+                        "c. Vaguedad",
+                        "d. Comentarios"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 43,
+                    text: "¿Qué define las circunstancias en que una operación particular es válida?",
+                    options: [
+                        "a. Contradicciones",
+                        "b. Post-condición",
+                        "c. Vaguedad",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 44,
+                    text: "¿Cuál de las siguientes es una manera de hacer una declaración sobre los elementos de un conjunto que es verdadero para cada miembro del conjunto?",
+                    options: [
+                        "a. Conjunto",
+                        "b. Secuencia",
+                        "c. Cuantificación universal",
+                        "d. Ambos Set y secuencia"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 45,
+                    text: "¿Cuál de las siguientes opciones ocurre a menudo debido al volumen de un documento de especificación del sistema?",
+                    options: [
+                        "a. Contradicciones",
+                        "b. Ambigüedades",
+                        "c. Vaguedad",
+                        "d. Incompleto"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 46,
+                    text: "El _____ de un lenguaje de especificación formal a menudo se basa en una sintaxis que se deriva de la notación de la teoría de conjuntos estándar y el cálculo de predicados.",
+                    options: [
+                        "a. dominio semantico",
+                        "b. dominio sintáctico",
+                        "c. secuencia",
+                        "d. conjunto"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 47,
+                    text: "¿Cuál de los siguientes proporciona un método conciso, no ambiguo y consistente para documentar los requisitos del sistema?",
+                    options: [
+                        "a. CMM",
+                        "b. ISO 9001",
+                        "c. Herramientas de caja",
+                        "d. Metodos formales"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 48,
+                    text: "El _____ de un lenguaje de especificación indica cómo el lenguaje representa los requisitos del sistema.",
+                    options: [
+                        "a. dominio semantico",
+                        "b. dominio sintáctico",
+                        "c. secuencia",
+                        "d. conjunto"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 49,
+                    text: "¿Cuál de las siguientes opciones es esencial para el éxito, cuando se utilizan métodos formales por primera vez?",
+                    options: [
+                        "a. Formación de expertos",
+                        "b. Consultante",
+                        "c. Conocimientos previos",
+                        "d. Formación de expertos y consultoría."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 50,
+                    text: "La filosofía de Cleanroom SE se centra en la eliminación de defectos en lugar de la disponibilidad de defectos.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 51,
+                    text: "¿Cuál de los siguientes equipos de proceso de sala limpia desarrolla un conjunto de pruebas estadísticas para ejercer el software después del desarrollo?",
+                    options: [
+                        "a. Equipo de especificación",
+                        "b. Equipo de desarrollo",
+                        "c. Equipo de certificación",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 52,
+                    text: "Un elemento de software se ajusta a un modelo de componente estándar y se puede implementar y componer de forma independiente sin modificaciones de acuerdo con un estándar de composición.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 53,
+                    text: "¿Cuál de las siguientes es una característica de CBSE?",
+                    options: [
+                        "a. Aumenta la calidad",
+                        "b. CBSE acorta el tiempo de entrega",
+                        "c. CBSE aumenta la productividad",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 54,
+                    text: "¿Cuál de los siguientes términos se define mejor por la declaración: 'Para que un componente sea compostable, todas las interacciones externas deben'",
+                    options: [
+                        "a. Estandarizado",
+                        "b. Independiente",
+                        "c. Composable",
+                        "d. Documentado"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 55,
+                    text: "Un modelo de componente define estándares para",
+                    options: [
+                        "a. propiedades",
+                        "b. metodos",
+                        "c. mecanismos",
+                        "d. todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 56,
+                    text: "¿Cuál de los siguientes no es un ejemplo de tecnología de componentes?",
+                    options: [
+                        "a. EJB",
+                        "b. COM +",
+                        "c. .RED",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 57,
+                    text: "¿Cuál de los siguientes términos se define mejor por la declaración: 'Las operaciones en cada lado de la interfaz tienen el mismo nombre pero sus tipos de parámetros o la cantidad de parámetros son diferentes'?",
+                    options: [
+                        "a. Parámetro incompatibilidad",
+                        "b. Operación incompleta",
+                        "c. Incompatibilidad de operación",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 58,
+                    text: "¿Cuál de los siguientes términos se define mejor por la declaración: 'Los nombres de las operaciones en las interfaces 'provee' y 'requiere' son diferentes'?",
+                    options: [
+                        "a. Parámetro incompatibilidad",
+                        "b. Operación incompleta",
+                        "c. Incompatibilidad de operación",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 59,
+                    text: "Un ______ define un conjunto de estándares para componentes, incluidos estándares de interfaz, estándares de uso y estándares de implementación.",
+                    options: [
+                        "a. Ingeniería de software basada en componentes",
+                        "b. Composición de componentes",
+                        "c. Modelo de componente",
+                        "d. Interfaces de componentes"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 60,
+                    text: "______ es una forma de proporcionar funcionalidad en un servidor remoto con acceso de cliente a través de un navegador web.",
+                    options: [
+                        "a. SaaS",
+                        "b. SOA",
+                        "c. Configurabilidad",
+                        "d. Tanto SaaS como Configurabilidad"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 61,
+                    text: "¿Qué arquitecturas descentralizadas de arquitectura en las que no hay clientes y servidores distinguidos?",
+                    options: [
+                        "a. Arquitectura cliente-servidor multinivel",
+                        "b. Arquitectura maestro-esclavo",
+                        "c. Arquitectura de componentes distribuidos",
+                        "d. Arquitectura de igual a igual"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 62,
+                    text: "La arquitectura orientada a servicios (SOA) es",
+                    options: [
+                        "a. Fuertemente acoplado",
+                        "b. Débilmente acoplado",
+                        "c. Fuertemente cohesivo",
+                        "d. Libremente cohesivo"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 63,
+                    text: "¿Cuál de los siguientes es un principio esencial de una arquitectura?",
+                    options: [
+                        "a. Consistencia",
+                        "b. Confiabilidad",
+                        "c. Escalabilidad",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 64,
+                    text: "Organice las siguientes actividades para construir una SOA.",
+                    options: [
+                        "a. i, ii, iii, iv",
+                        "b. iii, ii, i, iv",
+                        "c. ii, iii, i, iv",
+                        "d. ii, iii, iv, i"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 65,
+                    text: "¿En qué se diferencia SOA de la arquitectura OO?",
+                    options: [
+                        "a. Fuerte acoplamiento entre objetos",
+                        "b. Las comunicaciones son prescriptivas más que descriptivas.",
+                        "c. Los datos están separados de un servicio o comportamiento.",
+                        "d. Los datos y métodos están integrados en un solo objeto."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 66,
+                    text: "¿Qué arquitectura se construirá sobre una SOA?",
+                    options: [
+                        "a. La arquitectura de la aplicación",
+                        "b. La arquitectura de servicio",
+                        "c. La arquitectura de componentes",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 67,
+                    text: "¿Cuál de las siguientes utilidades no es parte de Application Service Layer?",
+                    options: [
+                        "a. Implementación de políticas",
+                        "b. QoS",
+                        "c. Seguridad",
+                        "d. Verificar factura"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 68,
+                    text: "¿Cuál de las siguientes utilidades no es parte de Business Service Layer?",
+                    options: [
+                        "a. Servicio centrado en la tarea.",
+                        "b. Servicios de envoltura",
+                        "c. Obtener información de la cuenta",
+                        "d. Servicio centrado en la entidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 69,
+                    text: "Podemos construir una arquitectura orientada a servicios (SOA) usando lenguaje orientado a objeto (OO)",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 70,
+                    text: "Si detecta un fallo de alimentación al controlar un nivel de voltaje, debe realizar más de una observación para detectar que el voltaje está disminuyendo.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 71,
+                    text: "El tiempo de ejecución promedio del proceso del monitor de potencia debe ser inferior a",
+                    options: [
+                        "a. 1 ms",
+                        "b. 10ms",
+                        "c. 100ms",
+                        "d. ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 72,
+                    text: "¿Cuál de los siguientes diagramas puede ayudar a detectar cortes de puntos?",
+                    options: [
+                        "a. Diagrama de clase",
+                        "b. Diagrama de objetos",
+                        "c. Diagrama de secuencia",
+                        "d. Diagrama ER"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 73,
+                    text: "¿Cuál de los siguientes se representa como un aspecto que solicita un nombre de inicio de sesión y una contraseña?",
+                    options: [
+                        "a. Clase",
+                        "b. Objeto",
+                        "c. Autenticación de usuario",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 74,
+                    text: "La investigación y el desarrollo en orientación de aspectos se han centrado",
+                    options: [
+                        "a. reingeniería de software",
+                        "b. programación artificial",
+                        "c. Programación Orientada a Aspectos",
+                        "d. todos los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 75,
+                    text: "¿Cuál de los siguientes no es un tipo de interés de las partes interesadas?",
+                    options: [
+                        "a. Preocupaciones funcionales",
+                        "b. Preocupaciones por la calidad del servicio.",
+                        "c. Preocupación política",
+                        "d. Preocupación no funcional"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 76,
+                    text: "¿Cuál de las siguientes preocupaciones se adapta mejor a la siguiente declaración: 'El sistema de banca por Internet incluye nuevos requisitos del cliente, requisitos de cuenta, requisitos de gestión del cliente, requisitos de seguridad, requisitos de recuperación, etc.'?",
+                    options: [
+                        "a. Preocupaciones funcionales",
+                        "b. Preocupaciones por la calidad del servicio.",
+                        "c. Preocupaciones del sistema",
+                        "d. Preocupaciones transversales"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 77,
+                    text: "¿Cuál de las siguientes es la preocupación principal en el sistema de gestión de registros médicos?",
+                    options: [
+                        "a. mantener registros de pacientes",
+                        "b. diagnostico y tratamientos",
+                        "c. consultas",
+                        "d. todos los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 78,
+                    text: "Un evento en un programa de ejecución donde el asesoramiento asociado con un aspecto puede ejecutarse se conoce como",
+                    options: [
+                        "a. aspecto",
+                        "b. punto de unión",
+                        "c. modelo de punto de unión",
+                        "d. punto de corte"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 79,
+                    text: "¿Cuál de los siguientes servicios no es proporcionado por un objeto?",
+                    options: [
+                        "a. Activar y desactivar objetos",
+                        "b. Características de seguridad",
+                        "c. Archivos que implementan las entidades identificadas dentro del ERD.",
+                        "d. Registro de implementación de objeto."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 80,
+                    text: "¿Cuál de los siguientes términos se define mejor por la declaración: 'Cuando un objeto invoca a otro objeto independiente, se pasa un mensaje entre los dos objetos'?",
+                    options: [
+                        "a. Pareja de control",
+                        "b. Objeto de aplicación",
+                        "c. Pareja de datos",
+                        "d. Objeto de base de datos"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 81,
+                    text: "CORBA significa",
+                    options: [
+                        "a. Solicitud de objeto común Construir arquitectura",
+                        "b. Arquitectura de agente de solicitud de objetos comunes",
+                        "c. Solicitud de objeto común Break Architecture",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 82,
+                    text: "¿Qué atributo de la aplicación web está definido por la declaración: 'Un gran número de usuarios pueden acceder a la aplicación web a la vez'?",
+                    options: [
+                        "a. Carga impredecible",
+                        "b. Actuación",
+                        "c. Concurrencia",
+                        "d. Intensividad de la red"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 83,
+                    text: "¿Qué atributo de la aplicación web se define en la declaración: 'La calidad y la naturaleza estética del contenido sigue siendo un determinante importante de la calidad de una aplicación web'?",
+                    options: [
+                        "a. Disponibilidad",
+                        "b. Datos impulsados",
+                        "c. Contenido sensible",
+                        "d. Evolución continua"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 84,
+                    text: "Si el usuario consulta una colección de grandes bases de datos y extrae información de la aplicación web, la aplicación se clasifica en",
+                    options: [
+                        "a. Aplicación orientada al servicio",
+                        "b. Aplicación de acceso a la base de datos",
+                        "c. Aplicación de portal",
+                        "d. Aplicación de almacenamiento de datos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 85,
+                    text: "¿Qué modelo de proceso se debe utilizar en prácticamente todas las situaciones de ingeniería web?",
+                    options: [
+                        "a. Modelo incremental",
+                        "b. Modelo de cascada",
+                        "c. Modelo espiral",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 86,
+                    text: "¿Qué análisis forma parte del modelo de análisis del marco del proceso de ingeniería web?",
+                    options: [
+                        "a. Análisis de contenido",
+                        "b. Análisis de interacción",
+                        "c. Análisis funcional",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 87,
+                    text: "El desarrollo web y el desarrollo de software son lo mismo.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 88,
+                    text: "Los sistemas basados en la web a menudo están orientados a documentos y contienen contenido estático o dinámico.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 89,
+                    text: "El núcleo de la ingeniería inversa es una actividad llamada",
+                    options: [
+                        "a. código de reestructuración",
+                        "b. direccionalidad",
+                        "c. extraer abstracciones",
+                        "d. interactividad"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 90,
+                    text: "¿Qué se ha convertido en una exigencia para los productos y sistemas informáticos de todo tipo?",
+                    options: [
+                        "a. GUIs",
+                        "b. Llaves del candidato",
+                        "c. Modelo de objeto",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 91,
+                    text: "La ingeniería delantera también se conoce como",
+                    options: [
+                        "a. extraer abstracciones",
+                        "b. renovación",
+                        "c. recuperación",
+                        "d. Renovación y recuperación."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 92,
+                    text: "La ingeniería inversa es el proceso de derivar el diseño y la especificación del sistema de su",
+                    options: [
+                        "a. GUI",
+                        "b. Base de datos",
+                        "c. Código fuente",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 93,
+                    text: "Las técnicas de ingeniería inversa para datos de programas internos se centran en la definición de clases de objetos.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 94,
+                    text: "¿Cuál de los siguientes pasos no se puede usar para definir el modelo de datos existente como un precursor para rediseñar un nuevo modelo de base de datos?",
+                    options: [
+                        "a. Construir un modelo de objeto inicial",
+                        "b. Determinar las claves del candidato",
+                        "c. Refinar las clases tentativas.",
+                        "d. Descubrir interfaces de usuario"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 95,
+                    text: "Gran parte de la información necesaria para crear un modelo de comportamiento puede obtenerse observando la manifestación externa de los existentes.",
+                    options: [
+                        "a. claves candidatas",
+                        "b. interfaz",
+                        "c. estructura de base de datos",
+                        "d. ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 96,
+                    text: "A veces se llama extracción de elementos de datos y objetos para obtener información sobre el flujo de datos y para comprender las estructuras de datos existentes que se han implementado.",
+                    options: [
+                        "a. análisis de los datos",
+                        "b. direccionalidad",
+                        "c. extracción de datos",
+                        "d. aplicaciones cliente"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 97,
+                    text: "La ingeniería inversa y la reingeniería son procesos equivalentes de la ingeniería de software.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 98,
+                    text: "La transformación de un sistema de una forma de representación a otra se conoce como",
+                    options: [
+                        "a. Re-factoring",
+                        "b. Reestructuración",
+                        "c. Ingeniería delantera",
+                        "d. Re-factoring y Reestructuración"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 99,
+                    text: "Tabla de decisiones",
+                    options: [
+                        "a. muestra los caminos de decisión",
+                        "b. representa un flujo de información",
+                        "c. Obtiene una imagen precisa del sistema.",
+                        "d. Reglas de documentos que seleccionan una o más acciones basadas en una o más condiciones de un conjunto de condiciones posibles"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 100,
+                    text: "¿Cuál de los siguientes no es un tipo de mantenimiento de software?",
+                    options: [
+                        "a. Mantenimiento correctivo",
+                        "b. Mantenimiento adaptativo",
+                        "c. Mantenimiento perfectivo",
+                        "d. Mantenimiento destructivo"
+                    ],
+                    correctAnswer: 3
+                }
+            ]
+        };
+
+        // Variables globales
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(examData.questions.length).fill(null);
+        let startTime = Date.now();
+        let timerInterval;
+
+        // Elementos del DOM
+        const examContainer = document.getElementById('exam-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const incorrectAnswersElement = document.getElementById('incorrect-answers');
+        const percentageElement = document.getElementById('percentage');
+        const totalTimeElement = document.getElementById('total-time');
+        const restartBtn = document.getElementById('restart-btn');
+        const reviewBtn = document.getElementById('review-btn');
+        const reviewQuestions = document.getElementById('review-questions');
+
+        // Inicializar el examen
+        function initExam() {
+            startTimer();
+            loadQuestion(currentQuestionIndex);
+            updateNavigationButtons();
+        }
+
+        // Temporizador
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            timerElement.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Cargar pregunta
+        function loadQuestion(index) {
+            const question = examData.questions[index];
+            
+            questionText.textContent = `${question.id}. ${question.text}`;
+            questionCounter.textContent = `Pregunta ${question.id} de ${examData.questions.length}`;
+            
+            // Actualizar barra de progreso
+            const progress = ((index + 1) / examData.questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[index] === optionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.innerHTML = `
+                    <input type="radio" name="answer" id="option-${optionIndex}" value="${optionIndex}" 
+                        ${userAnswers[index] === optionIndex ? 'checked' : ''}>
+                    <label for="option-${optionIndex}">${option}</label>
+                `;
+                
+                optionElement.addEventListener('click', () => selectAnswer(optionIndex));
+                optionsContainer.appendChild(optionElement);
+            });
+        }
+
+        // Seleccionar respuesta
+        function selectAnswer(optionIndex) {
+            userAnswers[currentQuestionIndex] = optionIndex;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // Navegación
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === examData.questions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function goToNextQuestion() {
+            if (currentQuestionIndex < examData.questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        function goToPrevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        // Finalizar examen
+        function finishExam() {
+            stopTimer();
+            calculateResults();
+            showResults();
+        }
+
+        // Calcular resultados
+        function calculateResults() {
+            let correctCount = 0;
+            let incorrectCount = 0;
+            
+            examData.questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    correctCount++;
+                } else if (userAnswers[index] !== null) {
+                    incorrectCount++;
+                }
+            });
+            
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const percentage = Math.round((correctCount / examData.questions.length) * 100);
+            
+            scoreElement.textContent = `${correctCount}/${examData.questions.length}`;
+            correctAnswersElement.textContent = correctCount;
+            incorrectAnswersElement.textContent = incorrectCount;
+            percentageElement.textContent = `${percentage}%`;
+            totalTimeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            examContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+        }
+
+        // Revisar respuestas
+        function showReview() {
+            reviewQuestions.innerHTML = '';
+            reviewQuestions.style.display = 'block';
+            
+            examData.questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                reviewItem.innerHTML = `
+                    <div class="question-text"><strong>Pregunta ${question.id}:</strong> ${question.text}</div>
+                    <div><strong>Tu respuesta:</strong> ${userAnswer !== null ? question.options[userAnswer] : 'Sin responder'}</div>
+                    <div><strong>Respuesta correcta:</strong> ${question.options[question.correctAnswer]}</div>
+                    ${!isCorrect && userAnswer !== null ? 
+                        '<div class="feedback incorrect">✗ Respuesta incorrecta</div>' : 
+                        isCorrect ? 
+                        '<div class="feedback correct">✓ Respuesta correcta</div>' :
+                        '<div class="feedback incorrect">○ Sin responder</div>'
+                    }
+                `;
+                
+                reviewQuestions.appendChild(reviewItem);
+            });
+            
+            reviewBtn.textContent = 'Ocultar Revisión';
+            reviewBtn.onclick = hideReview;
+        }
+
+        function hideReview() {
+            reviewQuestions.style.display = 'none';
+            reviewBtn.textContent = 'Revisar Respuestas';
+            reviewBtn.onclick = showReview;
+        }
+
+        // Reiniciar examen
+        function restartExam() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(examData.questions.length).fill(null);
+            startTime = Date.now();
+            
+            examContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            reviewQuestions.style.display = 'none';
+            reviewBtn.textContent = 'Revisar Respuestas';
+            reviewBtn.onclick = showReview;
+            
+            initExam();
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        finishBtn.addEventListener('click', finishExam);
+        restartBtn.addEventListener('click', restartExam);
+        reviewBtn.addEventListener('click', showReview);
+
+        // Inicializar el examen cuando se carga la página
+        document.addEventListener('DOMContentLoaded', initExam);
+    </script>
+</body>
+</html>

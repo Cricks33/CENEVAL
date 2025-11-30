@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen 3 - CENEVAL</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background-color: var(--warning);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background-color: #e67e22;
+        }
+        
+        .exam-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .exam-header h2 {
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--secondary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f9f9f9;
+            border-color: #ccc;
+        }
+        
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: var(--secondary);
+        }
+        
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .exam-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: none;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 20px 0;
+        }
+        
+        .score-details {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .correct {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .incorrect {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .review-questions {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .review-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .review-item.correct {
+            border-left: 4px solid var(--success);
+        }
+        
+        .review-item.incorrect {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .timer {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .exam-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .exam-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .exam-controls .btn {
+                width: 100%;
+            }
+            
+            .option {
+                padding: 12px;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <a href="index.html" class="back-btn">← Volver al Menú Principal</a>
+            <div class="timer" id="timer">Tiempo: 00:00</div>
+        </div>
+
+        <div class="exam-container" id="exam-container">
+            <div class="exam-header">
+                <h2 id="exam-title">Examen 3 - Tercera Práctica</h2>
+                <div id="question-counter">Pregunta 1 de 100</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text" id="question-text">Cargando pregunta...</div>
+                <div class="options" id="options-container">
+                    <!-- Las opciones se cargarán dinámicamente -->
+                </div>
+            </div>
+            
+            <div class="exam-controls">
+                <button class="btn btn-warning" id="prev-btn" disabled>Anterior</button>
+                <button class="btn" id="next-btn">Siguiente</button>
+                <button class="btn btn-success" id="finish-btn" style="display: none;">Finalizar Examen</button>
+            </div>
+        </div>
+        
+        <div class="results-container" id="results-container">
+            <h2>Resultados del Examen 3</h2>
+            <div class="score" id="score">0/100</div>
+            <div class="score-details">
+                <p><span class="correct" id="correct-answers">0</span> respuestas correctas</p>
+                <p><span class="incorrect" id="incorrect-answers">0</span> respuestas incorrectas</p>
+                <p><span id="percentage">0%</span> de efectividad</p>
+                <p>Tiempo total: <span id="total-time">00:00</span></p>
+            </div>
+            <button class="btn" id="restart-btn">Volver a Intentar</button>
+            <button class="btn btn-warning" id="review-btn">Revisar Respuestas</button>
+            
+            <div class="review-questions" id="review-questions" style="display: none;">
+                <!-- Las preguntas revisadas se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos del examen 3 con las 100 preguntas COMPLETAS
+        const examData = {
+            title: "Examen 3 - Tercera Práctica",
+            questions: [
+                {
+                    id: 1,
+                    text: "Cuando los elementos del módulo se agrupan porque la salida de un elemento sirve como entrada a otro y así sucesivamente, se llama _____.",
+                    options: [
+                        "a. Cohesión funcional",
+                        "b. Cohesión secuencial",
+                        "c. Cohesión comunicacional",
+                        "d. Cohesión procesal"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 2,
+                    text: "A partir de lo siguiente, ¿qué método se adoptará en el proceso de reutilización?",
+                    options: [
+                        "a. Ya sea manteniendo los mismos requisitos y ajustando los componentes.",
+                        "b. Manteniendo los mismos componentes y modificando los requisitos.",
+                        "c. Tanto a como B",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 3,
+                    text: "¿Qué herramientas se utilizan para representar los componentes del sistema, los datos y el flujo de control entre varios componentes de software y una estructura del sistema en forma gráfica?",
+                    options: [
+                        "a. Herramientas de modelado de procesos",
+                        "b. Herramientas de gestión de proyectos",
+                        "c. Herramientas de diagrama",
+                        "d. Herramientas de documentación"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 4,
+                    text: "El diccionario de datos contiene descripciones de cada software.",
+                    options: [
+                        "a. elemento de control",
+                        "b. objeto de datos",
+                        "c. diagrama",
+                        "d. tanto a como B"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 5,
+                    text: "¿Cuál de estos no es un elemento de un modelo de análisis orientado a objetos?",
+                    options: [
+                        "a. Elementos de comportamiento",
+                        "b. Elementos basados en la clase",
+                        "c. Elementos de datos",
+                        "d. Elementos basados en escenarios"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 6,
+                    text: "El polimorfismo reduce el esfuerzo requerido para extender un sistema de objetos en",
+                    options: [
+                        "a. Acoplamiento de objetos más apretados.",
+                        "b. habilitando varias operaciones diferentes para compartir el mismo nombre.",
+                        "c. Haciendo los objetos más dependientes unos de otros.",
+                        "d. Eliminando las barreras impuestas por la encapsulación."
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 7,
+                    text: "Cuando el flujo general en un segmento de un diagrama de flujo de datos es en gran parte secuencial y sigue caminos de línea recta, _____ está presente.",
+                    options: [
+                        "a. acoplamiento bajo",
+                        "b. buena modularidad",
+                        "c. flujo de transacciones",
+                        "d. flujo de transformación"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 8,
+                    text: "Cuando un solo elemento que activa otro flujo de datos a lo largo de una de las muchas rutas de un diagrama de flujo de datos, _____ caracteriza el flujo de información.",
+                    options: [
+                        "a. acoplamiento alto",
+                        "b. pobre modularidad",
+                        "c. flujo de transacciones",
+                        "d. flujo de transformación"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 9,
+                    text: "En el mapeo de transacciones, la factorización de primer nivel da como resultado el",
+                    options: [
+                        "a. creación de un CFD",
+                        "b. Derivación de la jerarquía de control.",
+                        "c. Distribución de módulos de trabajo.",
+                        "d. refinamiento de la vista del módulo"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 10,
+                    text: "Una aplicación exitosa de la transformación o la asignación de transacciones para crear un diseño arquitectónico se complementa con",
+                    options: [
+                        "a. diagramas de relaciones de entidades",
+                        "b. Descripciones de la interfaz del módulo",
+                        "c. Procesamiento de narrativas para cada módulo.",
+                        "d. tanto byc"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 11,
+                    text: "¿Qué modelo de amplificación de defectos se utiliza para ilustrar la generación y detección de errores durante los pasos preliminares de un proceso de ingeniería de software?",
+                    options: [
+                        "a. Diseño",
+                        "b. Diseño detallado",
+                        "c. Codificación",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 12,
+                    text: "¿Qué método se usa para evaluar la expresión que pasa la función como un argumento?",
+                    options: [
+                        "a. Evaluación estricta",
+                        "b. Recursión",
+                        "c. Cálculo",
+                        "d. Funciones puras"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 13,
+                    text: "La organización puede tener inspección interna, la participación directa de los usuarios y el lanzamiento de la versión beta son algunos de ellos y también incluye facilidad de uso, compatibilidad, aceptación del usuario, etc.",
+                    options: [
+                        "a. Análisis de tareas",
+                        "b. Recopilación de requisitos de GUI",
+                        "c. Diseño e implementación de GUI",
+                        "d. Pruebas"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 14,
+                    text: "¿Qué prueba es la re-ejecución de algún subconjunto de pruebas que ya se han realizado para garantizar los cambios que no se propagan?",
+                    options: [
+                        "a. Examen de la unidad",
+                        "b. Pruebas de regresión",
+                        "c. Pruebas de integración",
+                        "d. Pruebas basadas en hilos"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 15,
+                    text: "¿Cuál de estos pertenece a las pruebas de integración en el contexto OO?",
+                    options: [
+                        "a. Examen de la unidad",
+                        "b. Pruebas de regresión",
+                        "c. Prueba de sándwich",
+                        "d. Pruebas basadas en hilos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 16,
+                    text: "Durante las pruebas de seguridad, el probador desempeña el papel de la persona que desea____.",
+                    options: [
+                        "a. Penetra el sistema",
+                        "b. Penetra el oyente",
+                        "c. Tanto a como B",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 17,
+                    text: "¿Qué caja específica el comportamiento de un sistema o una parte de un sistema?",
+                    options: [
+                        "a. Caja de estado",
+                        "b. Caja clara",
+                        "c. Caja negra",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 18,
+                    text: "Cuanto más tiempo existe una falla en el software",
+                    options: [
+                        "a. cuanto más tediosa se vuelve su eliminación",
+                        "b. Cuanto más costoso es detectar y corregir.",
+                        "c. Es menos probable que se corrija adecuadamente.",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 19,
+                    text: "¿Qué condición define las circunstancias para que una operación en particular sea válida?",
+                    options: [
+                        "a. Postcondición",
+                        "b. Condición previa",
+                        "c. Invariante",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 20,
+                    text: "¿Cuál no es una actividad de SQA?",
+                    options: [
+                        "a. Prueba de caja negra",
+                        "b. Prueba de caja blanca",
+                        "c. Pruebas de integración",
+                        "d. Examen de la unidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 21,
+                    text: "La prueba unitaria se realiza por",
+                    options: [
+                        "a. Usuarios",
+                        "b. Desarrolladores",
+                        "c. Clientes",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 22,
+                    text: "Las pruebas de comportamiento son",
+                    options: [
+                        "a. Prueba de caja blanca",
+                        "b. Prueba de caja negra",
+                        "c. Prueba de caja gris",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 23,
+                    text: "¿Cuál de las siguientes es una prueba de caja negra?",
+                    options: [
+                        "a. Prueba de ruta básica",
+                        "b. Análisis del valor límite",
+                        "c. Análisis de ruta de código",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 24,
+                    text: "¿Cuál de los siguientes no se usa para medir el tamaño del software?",
+                    options: [
+                        "a. KLOC",
+                        "b. Puntos de función",
+                        "c. Tamaño del módulo",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 25,
+                    text: "La depuración de software es un conjunto de actividades que se pueden planear por adelantado y realizar de manera sistemática.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 26,
+                    text: "¿Cuál de los siguientes no es un software que prueba características genéricas?",
+                    options: [
+                        "a. Diferentes técnicas de prueba son apropiadas en diferentes puntos en el tiempo.",
+                        "b. La prueba es realizada por el desarrollador del software o un grupo de prueba independiente",
+                        "c. Las pruebas y la depuración son actividades diferentes, pero la depuración debe incluirse en cualquier estrategia de prueba.",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 27,
+                    text: "ITG significa",
+                    options: [
+                        "a. grupo de prueba instantanea",
+                        "b. grupo de pruebas de integración",
+                        "c. grupo de prueba individual",
+                        "d. grupo de prueba independiente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 28,
+                    text: "Al recopilar ______ durante las pruebas de software, es posible desarrollar pautas significativas para detener el proceso de prueba.",
+                    options: [
+                        "a. Intensidad de falla",
+                        "b. Tiempo de prueba",
+                        "c. Mértica",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 29,
+                    text: "¿Cuál de los siguientes problemas debe abordarse para implementar una estrategia de prueba de software exitosa?",
+                    options: [
+                        "a. Utilice revisiones técnicas formales efectivas como filtro antes de la prueba",
+                        "b. Desarrolle un plan de pruebas que haga hincapié en las 'pruebas de ciclo rápido'.",
+                        "c. Objetivos de las pruebas estatales explícitamente",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 30,
+                    text: "Los casos de prueba deberían descubrir errores como",
+                    options: [
+                        "a. Terminación de bucle inexistente",
+                        "b. Comparación de diferentes tipos de datos",
+                        "c. Operadores lógicos incorrectos o precedencia",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 31,
+                    text: "La codificación y las pruebas se realizan de la siguiente manera:",
+                    options: [
+                        "a. Ad hoc",
+                        "b. Payaso",
+                        "c. De abajo hacia arriba",
+                        "d. Corte transversal"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 32,
+                    text: "La principal diferencia entre la prueba del programa y la prueba del sistema es",
+                    options: [
+                        "a. La prueba del sistema es difícil y la prueba del programa es fácil",
+                        "b. Las pruebas del programa son más completas que las pruebas del sistema",
+                        "c. Las pruebas del sistema se enfocan en probar las interfaces entre programas, las pruebas de programas se enfocan en programas individuales",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 33,
+                    text: "El diccionario de datos de wrt de comprobación cruzada se refiere a",
+                    options: [
+                        "a. El hallazgo de que no hay incoherencia se cita en un archivo de texto y, por lo tanto, la referencia aparece en el archivo de referencia",
+                        "b. Enlace de documentos a través de hipertexto, en caso de que el sistema se ocupe de la imagen del documento.",
+                        "c. Determinación de dónde se utilizan los datos en el sistema.",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 34,
+                    text: "En ejecución paralela de pruebas de s/w",
+                    options: [
+                        "a. Ejecución solo informatizada",
+                        "b. Sólo se ejecuta el sistema físico",
+                        "c. Tanto el sistema físico como el computarizado funcionan simultáneamente.",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 35,
+                    text: "El costo de la corrección de errores es de al menos",
+                    options: [
+                        "a. Etapa de diseño",
+                        "b. Etapa de desarrollo",
+                        "c. Etapa de implementacion",
+                        "d. Etapa de análisis de requerimientos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 36,
+                    text: "Variación en la depuración: se ha informado que la capacidad de codificación es",
+                    options: [
+                        "a. 1: 1",
+                        "b. 1: 3",
+                        "c. 1: 7",
+                        "d. 1:10"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 37,
+                    text: "En casos extremos, la variación de la codificación: se ha informado que la capacidad de depuración de los programadores es",
+                    options: [
+                        "a. 1: 2",
+                        "b. 1: 6",
+                        "c. 1:15",
+                        "d. 1:29"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 38,
+                    text: "Una sola entrada, una única salida se contrae con if, while, enunciados de secuencia y compuesto en C y simula",
+                    options: [
+                        "a. un hipercomputador",
+                        "b. una máquina de tornear",
+                        "c. solo autómatas finitos",
+                        "d. sólo un autómata de empuje hacia abajo"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 39,
+                    text: "Forma la especificación detallada del diseño. Si la codificación se realiza en C ++: C: ensamblador, los tamaños de código resultantes estarán en el promedio",
+                    options: [
+                        "a. 1: 3: 4",
+                        "b. 10: 3: 1",
+                        "c. 1: 3: 10",
+                        "d. 1: 10: 100"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 40,
+                    text: "Probando un programa a fondo",
+                    options: [
+                        "a. Sólo se encontrarán algunos errores.",
+                        "b. Garantiza que todos los defectos serán encontrados.",
+                        "c. Garantiza que todos los errores serán encontrados.",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 41,
+                    text: "La gestión de proyectos de software consta de una serie de actividades, que contienen ______.",
+                    options: [
+                        "a. Planificación de proyectos",
+                        "b. Gestión del alcance",
+                        "c. Estimación del proyecto",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 42,
+                    text: "La gestión eficaz de proyectos de software se centra en las cuatro P's. ¿Cuáles son esas cuatro p?",
+                    options: [
+                        "a. Personas, rendimiento, pago, producto.",
+                        "b. Personas, producto, proceso, proyecto.",
+                        "c. Personas, producto, performance, proyecto.",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 43,
+                    text: "Dar los factores del mundo real que afectan el costo de mantenimiento.",
+                    options: [
+                        "a. A medida que la tecnología avanza, resulta costoso mantener el software antiguo.",
+                        "b. La edad estándar de cualquier software se considera hasta 10 a 15 años.",
+                        "c. La mayoría de los ingenieros de mantenimiento son novatos y utilizan el método de prueba y error para corregir el problema.",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 44,
+                    text: "¿Qué factores finales del software afectan el costo de mantenimiento?",
+                    options: [
+                        "a. Estructura del programa de software",
+                        "b. Lenguaje de programación",
+                        "c. Dependencia del entorno externo.",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 45,
+                    text: "La naturaleza siempre creciente y adaptable del software depende en gran medida del entorno en el que el usuario trabaja en ______.",
+                    options: [
+                        "a. Costo",
+                        "b. Naturaleza dinámica",
+                        "c. Gestión de la calidad",
+                        "d. Escalabilidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 46,
+                    text: "Cuando el cliente puede solicitar nuevas características o funciones en el software, ¿qué significa en el mantenimiento del software?",
+                    options: [
+                        "a. Modificaciones de host",
+                        "b. Requisitos del cliente",
+                        "c. Condiciones de mercado",
+                        "d. Cambios organizativos"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 47,
+                    text: "¿Qué se utiliza para implementar los cambios en los requisitos nuevos o existentes del usuario en el mantenimiento del software?",
+                    options: [
+                        "a. Mantenimiento preventivo",
+                        "b. Mantenimiento perfecto",
+                        "c. Mantenimiento correctivo",
+                        "d. Mantenimiento adaptativo"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 48,
+                    text: "Lehman dio ocho leyes para la evolución del software y dividió el software en tres categorías. En qué categoría funciona el software estrictamente de acuerdo con las especificaciones y soluciones definidas.",
+                    options: [
+                        "a. Tipo estático",
+                        "b. Tipo incrustado",
+                        "c. Tipo practico",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 49,
+                    text: "¿Qué herramientas se utilizan en la implementación, prueba y mantenimiento?",
+                    options: [
+                        "a. Herramientas mayúsculas",
+                        "b. Herramientas de caja integradas",
+                        "c. Herramientas de caja baja",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 50,
+                    text: "La gestión de proyectos de software es el proceso de gestión de todas las actividades que están involucradas en el desarrollo de software, son ______.",
+                    options: [
+                        "a. Hora",
+                        "b. Costo",
+                        "c. Gestión de la calidad",
+                        "d. Todo lo mencionado anteriormente"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 51,
+                    text: "Las técnicas que permiten que un ingeniero de software entienda cómo se completa un proceso de trabajo cuando se incluye a varias personas, se llama _____.",
+                    options: [
+                        "a. Análisis de flujo de trabajo",
+                        "b. No rastrea riesgos potenciales",
+                        "c. Cubra las áreas problemáticas antes de que se vuelvan críticas.",
+                        "d. No ajusta el flujo de trabajo ni las tareas."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 52,
+                    text: "¿Cuál de los siguientes proporciona soporte semiautomático y automático a los métodos en una tecnología de capas?",
+                    options: [
+                        "a. Métodos",
+                        "b. Herramientas",
+                        "c. Proceso",
+                        "d. Enfoque de calidad"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 53,
+                    text: "Si el proceso del software no estuviera basado en conceptos científicos y de ingeniería, sería más fácil recrear un nuevo software que escalar uno existente, se conoce como_____.",
+                    options: [
+                        "a. Costo",
+                        "b. Gestión dinámica",
+                        "c. Software grande",
+                        "d. Escalabilidad"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 54,
+                    text: "¿Cuáles de las siguientes son razones válidas para recopilar los comentarios de los clientes sobre el software entregado?",
+                    options: [
+                        "a. Permite a los desarrolladores realizar cambios en el incremento entregado",
+                        "b. El horario de entrega puede ser revisado para reflejar los cambios",
+                        "c. Los desarrolladores pueden identificar cambios para incorporar en el siguiente incremento",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 55,
+                    text: "¿Cuál de los siguientes puede ser elementos de sistemas basados en computadora?",
+                    options: [
+                        "a. documentación",
+                        "b. software",
+                        "c. gente",
+                        "d. Todas las anteriores"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 56,
+                    text: "¿Cuál de los siguientes no es el objetivo de la gestión del proyecto?",
+                    options: [
+                        "a. Mantener los costos generales dentro del presupuesto",
+                        "b. Entrega del software al cliente a la hora acordada.",
+                        "c. Mantener un equipo de desarrollo feliz y que funcione bien.",
+                        "d. Evitar las quejas de los clientes."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 57,
+                    text: "Los gerentes de proyectos tienen que evaluar los riesgos que pueden afectar un proyecto.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 58,
+                    text: "¿Cuál de los siguientes no se considera un riesgo en la gestión de proyectos?",
+                    options: [
+                        "a. Retrasos en las especificaciones",
+                        "b. Concurso de productos",
+                        "c. Pruebas",
+                        "d. Rotación de personal"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 59,
+                    text: "El proceso que sigue cada gerente durante la vida de un proyecto se conoce como",
+                    options: [
+                        "a. Gestión de proyectos",
+                        "b. Ciclo de vida del gerente",
+                        "c. Gestión del proyecto Ciclo de vida",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 60,
+                    text: "Se considera como riesgo un 66.6%.",
+                    options: [
+                        "a. muy bajo",
+                        "b. bajo",
+                        "c. moderar",
+                        "d. alto"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 61,
+                    text: "¿Qué técnica es aplicable cuando se han completado otros proyectos en el mismo dominio de aplicación de analogía?",
+                    options: [
+                        "a. Modelado algorítmico de costos",
+                        "b. Opinión de expertos",
+                        "c. Estimación por analogía",
+                        "d. Ley de Parkinson"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 62,
+                    text: "¿Qué modelo asume que los sistemas se crean a partir de componentes reutilizables, secuencias de comandos o programación de bases de datos?",
+                    options: [
+                        "a. Un modelo de aplicación-composición.",
+                        "b. Un modelo post-arquitectura.",
+                        "c. Un modelo de reutilización.",
+                        "d. Un modelo de diseño temprano."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 63,
+                    text: "¿Cuál de los siguientes estados en que el trabajo se expande para llenar el tiempo disponible?",
+                    options: [
+                        "a. Herramientas de caja",
+                        "b. Precios para ganar",
+                        "c. Ley de Parkinson",
+                        "d. Opinión de expertos"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 64,
+                    text: "¿Qué modelo se usa en las primeras etapas del diseño del sistema después de que se hayan establecido los requisitos?",
+                    options: [
+                        "a. Un modelo de aplicación-composición.",
+                        "b. Un modelo post-arquitectura.",
+                        "c. Un modelo de reutilización.",
+                        "d. Un modelo de diseño temprano."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 65,
+                    text: "¿Qué modelo se usa para calcular el esfuerzo requerido para integrar componentes reutilizables o código de programa que se genera automáticamente mediante el diseño o las herramientas de traducción de programas?",
+                    options: [
+                        "a. Un modelo de aplicación-composición.",
+                        "b. Un modelo post-arquitectura.",
+                        "c. Un modelo de reutilización.",
+                        "d. Un modelo de diseño temprano."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 66,
+                    text: "El modelo COCOMO tiene en cuenta diferentes enfoques para el desarrollo de software, la reutilización, etc.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 67,
+                    text: "¿Cuál de los siguientes utiliza fórmulas derivadas empíricamente para predecir el esfuerzo en función de LOC o FP?",
+                    options: [
+                        "a. Estimación basada en FP",
+                        "b. Estimación basada en el proceso",
+                        "c. COCOMO",
+                        "d. Tanto la estimación basada en FP como COCOMO"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 68,
+                    text: "Los datos empíricos que respaldan la mayoría de los modelos de estimación se derivan de una amplia muestra de proyectos.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 69,
+                    text: "¿Qué versión de COCOMO establece que una vez que los requisitos se han estabilizado, se ha establecido la arquitectura básica del software?",
+                    options: [
+                        "a. Modelo de etapa de diseño temprano",
+                        "b. Modelo post-arquitectura-escenario",
+                        "c. Modelo de composición de la aplicación",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 70,
+                    text: "Qué modelo se usó durante las primeras etapas de la ingeniería de software, cuando la creación de un prototipo de las interfaces de usuario, la consideración del software y la interacción del sistema, la evaluación del rendimiento y la evaluación de la madurez de la tecnología fueron primordiales.",
+                    options: [
+                        "a. Modelo de etapa de diseño temprano",
+                        "b. Modelo post-arquitectura-escenario",
+                        "c. Modelo de composición de la aplicación",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 71,
+                    text: "¿Qué factores afectan las consecuencias probables si se produce un riesgo?",
+                    options: [
+                        "a. Evitación de riesgo",
+                        "b. Monitoreo de riesgos",
+                        "c. Tiempo de riesgo",
+                        "d. Planificación de contingencias"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 72,
+                    text: "La rotación de personal, la mala comunicación con el cliente son riesgos que se extrapolan de la experiencia pasada y se llaman ______.",
+                    options: [
+                        "a. Riesgos de negocio",
+                        "b. Riesgos predecibles",
+                        "c. Riesgos del proyecto",
+                        "d. Riesgos técnicos"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 73,
+                    text: "¿Qué riesgo da el grado de incertidumbre y se mantendrá el cronograma del proyecto para que el producto se entregue a tiempo?",
+                    options: [
+                        "a. Riesgo del negocio",
+                        "b. Riesgo técnico",
+                        "c. Riesgo de horario",
+                        "d. Riesgo del proyecto"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 74,
+                    text: "¿En qué modelo se considera el factor de riesgo del proyecto?",
+                    options: [
+                        "a. Modelo espiral",
+                        "b. Modelo de cascada",
+                        "c. Modelo de prototipado",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 75,
+                    text: "De lo siguiente se dan tres categorías principales de riesgo,",
+                    options: [
+                        "a. 1,2 y 3",
+                        "b. 2,3 y 4",
+                        "c. 1,2 y 4",
+                        "d. 1,3 y 4"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 76,
+                    text: "En el proceso de gestión de riesgos, ¿qué hace una nota de todos los riesgos posibles que pueden ocurrir en el proyecto?",
+                    options: [
+                        "a. Gestionar",
+                        "b. Monitor",
+                        "c. Clasificar por categorías",
+                        "d. Identificación"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 77,
+                    text: "¿Qué riesgos identifican los posibles problemas de diseño, implementación, interfaz, verificación y mantenimiento?",
+                    options: [
+                        "a. Riesgo del proyecto",
+                        "b. Riesgo del negocio",
+                        "c. Riesgo tecnico",
+                        "d. Riesgo de horario"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 78,
+                    text: "Construir un producto o sistema excelente para que nadie realmente quiera un riesgo es una ______.",
+                    options: [
+                        "a. Riesgo tecnico",
+                        "b. Riesgo de horario",
+                        "c. Riesgo del negocio",
+                        "d. Riesgo de rendimiento"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 79,
+                    text: "¿Cuáles son las características del riesgo del software?",
+                    options: [
+                        "a. Incertidumbre",
+                        "b. Pérdida",
+                        "c. Tanto a como B",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 80,
+                    text: "¿Qué todo tiene que ser identificado como por identificación de riesgo?",
+                    options: [
+                        "a. Amenazas",
+                        "b. Vulnerabilidades",
+                        "c. Consecuencias",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 81,
+                    text: "¿Cuál no es una actividad de gestión de riesgos?",
+                    options: [
+                        "a. Evaluación de riesgos",
+                        "b. Generación de riesgo",
+                        "c. Control de riesgo",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 82,
+                    text: "¿Cuál es el producto de la probabilidad de incurrir en una pérdida debido al riesgo y la magnitud potencial de esa pérdida?",
+                    options: [
+                        "a. Riesgo de exposición",
+                        "b. Priorización de riesgos",
+                        "c. Análisis de riesgo",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 83,
+                    text: "¿Qué amenaza la calidad y la puntualidad del software que se va a producir?",
+                    options: [
+                        "a. Riesgos conocidos",
+                        "b. Riesgos de negocio",
+                        "c. Riesgos del proyecto",
+                        "d. Riesgos técnicos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 84,
+                    text: "¿Qué amenaza la viabilidad del software a construir?",
+                    options: [
+                        "a. Riesgos conocidos",
+                        "b. Riesgos de negocio",
+                        "c. Riesgos del proyecto",
+                        "d. Riesgos técnicos"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 85,
+                    text: "¿Cuál de los siguientes no es un riesgo comercial?",
+                    options: [
+                        "a. Construyendo un excelente producto o sistema que nadie realmente quied.",
+                        "b. perder el apoyo de la alta gerencia debido a un cambio de enfoque o cambio en las personas",
+                        "c. Falta de requisitos documentados o alcance del software.",
+                        "d. perder presupuesto o compromiso personal"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 86,
+                    text: "¿Cuál de los siguientes es un intento sistemático de especificar amenazas al plan del proyecto?",
+                    options: [
+                        "a. Identificación de riesgo",
+                        "b. Riesgo de rendimiento",
+                        "c. Riesgo de apoyo",
+                        "d. Proyección de riesgos"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 87,
+                    text: "¿Qué riesgos están asociados con el tamaño total del software que se creará o modificará?",
+                    options: [
+                        "a. Riesgos de impacto empresarial",
+                        "b. Definición de procesos riesgos",
+                        "c. Riesgos del tamaño del producto",
+                        "d. Riesgos del entorno de desarrollo."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 88,
+                    text: "¿Qué riesgos están asociados con las restricciones impuestas por la administración o el mercado?",
+                    options: [
+                        "a. Riesgos de impacto empresarial",
+                        "b. Definición de procesos riesgos",
+                        "c. Riesgos del tamaño del producto",
+                        "d. Riesgos del entorno de desarrollo."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 89,
+                    text: "¿Cuál de los siguientes términos se define mejor en la declaración: 'el grado de incertidumbre de que el producto cumplirá con sus requisitos y será adecuado para su uso previsto'?",
+                    options: [
+                        "a. Riesgo de rendimiento",
+                        "b. Riesgo de costo",
+                        "c. Riesgo de apoyo",
+                        "d. Riesgo de horario"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 90,
+                    text: "La gestión de riesgos es uno de los trabajos más importantes para un",
+                    options: [
+                        "a. Cliente",
+                        "b. Inversor",
+                        "c. Equipo de producción",
+                        "d. Gerente de proyecto"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 91,
+                    text: "¿Cuál de los siguientes riesgos es la falla de un componente comprado para funcionar como se espera?",
+                    options: [
+                        "a. Riesgo de producto",
+                        "b. Riesgo del proyecto",
+                        "c. Riesgo del negocio",
+                        "d. Riesgo de programación"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 92,
+                    text: "¿Cuál de los siguientes términos se define mejor en la declaración: 'Habrá un cambio en la administración de la organización con diferentes prioridades'?",
+                    options: [
+                        "a. Rotación de personal",
+                        "b. Cambio tecnológico",
+                        "c. Cambio de gestión",
+                        "d. Concurso de productos"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 93,
+                    text: "¿Cuál de los siguientes términos se define mejor en la declaración: 'La tecnología subyacente en la que se construye el sistema está reemplazada por la nueva tecnología'?",
+                    options: [
+                        "a. Cambio tecnológico",
+                        "b. Concurso de productos",
+                        "c. Cambio de requisitos",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 94,
+                    text: "¿Qué evalúa el riesgo y sus planes para la mitigación del riesgo y reviselos cuando se sabe más sobre el riesgo?",
+                    options: [
+                        "a. Monitoreo de riesgos",
+                        "b. Planificación de riesgos",
+                        "c. Análisis de riesgo",
+                        "d. Identificación de riesgo"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 95,
+                    text: "¿Cuál de los siguientes riesgos se deriva del entorno organizacional donde se está desarrollando el software?",
+                    options: [
+                        "a. Personas riesgos",
+                        "b. Riesgos tecnológicos",
+                        "c. Riesgos de estimación",
+                        "d. Riesgos organizacionales"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    id: 96,
+                    text: "¿Cuál de los siguientes riesgos se deriva de las tecnologías de software o hardware que se utilizan para desarrollar el sistema?",
+                    options: [
+                        "a. Riesgos gerenciales",
+                        "b. Riesgos tecnológicos",
+                        "c. Riesgos de estimación",
+                        "d. Riesgos organizacionales"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 97,
+                    text: "¿Cuál de los siguientes términos se define mejor en la declaración: 'Derive información de trazabilidad para maximizar la información que se oculta en el diseño'?",
+                    options: [
+                        "a. Tiempo de desarrollo subestimado",
+                        "b. Reestructuración organizacional",
+                        "c. Cambios de requisitos",
+                        "d. Ninguno de los mencionados"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    id: 98,
+                    text: "¿Cuál de las siguientes estrategias significa que se reducirá el impacto del riesgo?",
+                    options: [
+                        "a. Estrategias de evitación",
+                        "b. Estrategias de minimización",
+                        "c. Planes de Contingencia",
+                        "d. Todos los mencionados"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    id: 99,
+                    text: "La gestión de riesgos ahora se reconoce como una de las tareas de gestión de proyectos más importantes.",
+                    options: [
+                        "a. Cierto",
+                        "b. Falso",
+                        "c. No puedo decir",
+                        "d. Ninguna de las anteriores"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    id: 100,
+                    text: "Una evaluación del peor daño posible que podría resultar de un peligro particular se conoce como",
+                    options: [
+                        "a. Riesgo",
+                        "b. Probabilidad de peligro",
+                        "c. Gravedad del peligro",
+                        "d. Percance"
+                    ],
+                    correctAnswer: 2
+                }
+            ]
+        };
+
+        // Variables globales
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(examData.questions.length).fill(null);
+        let startTime = Date.now();
+        let timerInterval;
+
+        // Elementos del DOM
+        const examContainer = document.getElementById('exam-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const incorrectAnswersElement = document.getElementById('incorrect-answers');
+        const percentageElement = document.getElementById('percentage');
+        const totalTimeElement = document.getElementById('total-time');
+        const restartBtn = document.getElementById('restart-btn');
+        const reviewBtn = document.getElementById('review-btn');
+        const reviewQuestions = document.getElementById('review-questions');
+
+        // Inicializar el examen
+        function initExam() {
+            startTimer();
+            loadQuestion(currentQuestionIndex);
+            updateNavigationButtons();
+        }
+
+        // Temporizador
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            timerElement.textContent = `Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Cargar pregunta
+        function loadQuestion(index) {
+            const question = examData.questions[index];
+            
+            questionText.textContent = `${question.id}. ${question.text}`;
+            questionCounter.textContent = `Pregunta ${question.id} de ${examData.questions.length}`;
+            
+            // Actualizar barra de progreso
+            const progress = ((index + 1) / examData.questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[index] === optionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.innerHTML = `
+                    <input type="radio" name="answer" id="option-${optionIndex}" value="${optionIndex}" 
+                        ${userAnswers[index] === optionIndex ? 'checked' : ''}>
+                    <label for="option-${optionIndex}">${option}</label>
+                `;
+                
+                optionElement.addEventListener('click', () => selectAnswer(optionIndex));
+                optionsContainer.appendChild(optionElement);
+            });
+        }
+
+        // Seleccionar respuesta
+        function selectAnswer(optionIndex) {
+            userAnswers[currentQuestionIndex] = optionIndex;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // Navegación
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === examData.questions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function goToNextQuestion() {
+            if (currentQuestionIndex < examData.questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        function goToPrevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+                updateNavigationButtons();
+            }
+        }
+
+        // Finalizar examen
+        function finishExam() {
+            stopTimer();
+            calculateResults();
+            showResults();
+        }
+
+        // Calcular resultados
+        function calculateResults() {
+            let correctCount = 0;
+            let incorrectCount = 0;
+            
+            examData.questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    correctCount++;
+                } else if (userAnswers[index] !== null) {
+                    incorrectCount++;
+                }
+            });
+            
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const percentage = Math.round((correctCount / examData.questions.length) * 100);
+            
+            scoreElement.textContent = `${correctCount}/${examData.questions.length}`;
+            correctAnswersElement.textContent = correctCount;
+            incorrectAnswersElement.textContent = incorrectCount;
+            percentageElement.textContent = `${percentage}%`;
+            totalTimeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            examContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+        }
+
+        // Revisar respuestas
+        function showReview() {
+            reviewQuestions.innerHTML = '';
+            reviewQuestions.style.display = 'block';
+            
+            examData.questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correctAnswer;
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                reviewItem.innerHTML = `
+                    <div class="question-text"><strong>Pregunta ${question.id}:</strong> ${question.text}</div>
+                    <div><strong>Tu respuesta:</strong> ${userAnswer !== null ? question.options[userAnswer] : 'Sin responder'}</div>
+                    <div><strong>Respuesta correcta:</strong> ${question.options[question.correctAnswer]}</div>
+                    ${!isCorrect && userAnswer !== null ? 
+                        '<div class="feedback incorrect">✗ Respuesta incorrecta</div>' : 
+                        isCorrect ? 
+                        '<div class="feedback correct">✓ Respuesta correcta</div>' :
+                        '<div class="feedback incorrect">○ Sin responder</div>'
+                    }
+                `;
+                
+                reviewQuestions.appendChild(reviewItem);
+            });
+            
+            reviewBtn.textContent = 'Ocultar Revisión';
+            reviewBtn.onclick = hideReview;
+        }
+
+        function hideReview() {
+            reviewQuestions.style.display = 'none';
+            reviewBtn.textContent = 'Revisar Respuestas';
+            reviewBtn.onclick = showReview;
+        }
+
+        // Reiniciar examen
+        function restartExam() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(examData.questions.length).fill(null);
+            startTime = Date.now();
+            
+            examContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            reviewQuestions.style.display = 'none';
+            reviewBtn.textContent = 'Revisar Respuestas';
+            reviewBtn.onclick = showReview;
+            
+            initExam();
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        finishBtn.addEventListener('click', finishExam);
+        restartBtn.addEventListener('click', restartExam);
+        reviewBtn.addEventListener('click', showReview);
+
+        // Inicializar el examen cuando se carga la página
+        document.addEventListener('DOMContentLoaded', initExam);
+    </script>
+</body>
+</html>
